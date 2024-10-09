@@ -1,9 +1,10 @@
 class DASHBOARD {
 	private root = '/i'
+	private auth = '/auth'
 
 	HOME = this.root
-	REGISTER = `${this.root}/register`
-	LOGIN = `${this.root}/login`
+	REGISTER = `${this.auth}/register`
+	LOGIN = `${this.auth}/login`
 	GROUPS = `${this.root}/groups`
 	OBJECTS = `${this.root}/objects`
 	PLANS = `${this.root}/plans`

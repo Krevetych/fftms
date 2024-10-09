@@ -35,30 +35,35 @@ export function Login() {
 	}
 
 	return (
-		<div>
+		<div className='flex h-screen items-center justify-center'>
 			<form
 				onSubmit={handleSubmit(onSubmit)}
-				className='flex flex-col gap-4 max-w-32 justify-center text-black'
+				className='w-1/4 flex flex-col border border-solid border-gray-700 py-16 px-10 rounded-xl'
 			>
-				<input
-					type='text'
-					placeholder='Логин'
-					{...register('login', {
-						required: 'Login is required'
-					})}
-				/>
+				<h1 className='text-2xl text-center font-black mb-10'>Вход</h1>
+				<div className='flex flex-col gap-y-4'>
+					<input
+						type='text'
+						className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
+						placeholder='Логин'
+						{...register('login', {
+							required: 'Login is required'
+						})}
+					/>
 
-				<input
-					type='password'
-					placeholder='Пароль'
-					{...register('password', {
-						required: 'Password is required'
-					})}
-				/>
+					<input
+						type='password'
+						className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
+						placeholder='Пароль'
+						{...register('password', {
+							required: 'Password is required'
+						})}
+					/>
+				</div>
 
 				<button
 					type='submit'
-					className='text-text'
+					className='text-text p-4 mt-5 bg-card rounded-lg text-xl font-semibold transition-colors duration-300 hover:bg-card/50'
 				>
 					Войти
 				</button>
