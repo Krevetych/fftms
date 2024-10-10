@@ -1,12 +1,16 @@
+'use client'
+
 import type { PropsWithChildren } from 'react'
+
+import { Sidebar } from './sidebar/Sidebar'
 
 export default function DashboardLayout({
 	children
 }: PropsWithChildren<unknown>) {
 	return (
-		<div className='grid min-h-screen 2xl:grid-cols-[1.1fr_6fr] grid-cols-[1.2fr_6fr]'>
-			<div className='bg-card my-5 mx-4 rounded-2xl p-4'>Sidebar</div>
-			<main className='overflow-x-hidden max-h-screen relative'>
+		<div className='grid h-screen gap-x-5 grid-cols-[1.4fr_6fr] p-5'>
+			<Sidebar />
+			<main className='overflow-x-hidden relative bg-card rounded-2xl p-4'>
 				{children}
 			</main>
 		</div>

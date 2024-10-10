@@ -1,19 +1,32 @@
 import { Metadata } from 'next'
 
 import { Heading } from '@/components/Heading'
+import CustomTable from '@/components/Table'
 
 import { NO_INDEX_PAGE } from '@/constants/seo.constants'
 
 export const metadata: Metadata = {
-	title: 'Dashboard',
+	title: 'Главная',
 	...NO_INDEX_PAGE
 }
 
 export default function DashboardPage() {
+	const headers: string[] = ['Name', 'Role', 'Status']
+	const data: Array<Record<string, string>> = [
+		{ name: 'Tony Reichert', role: 'CEO', status: 'Active' },
+		{ name: 'Zoey Lang', role: 'Technical Lead', status: 'Paused' },
+		{ name: 'Jane Fisher', role: 'Senior Developer', status: 'Active' },
+		{ name: 'William Howard', role: 'Community Manager', status: 'Vacation' }
+	]
 	return (
-		<div className='bg-card rounded-2xl p-5 my-5 mr-4'>
-			<Heading title='Панель управления' />
-			<div>Hello</div>
-		</div>
+		<>
+			<Heading title='Главная' />
+			<div>
+				<CustomTable
+					headers={headers}
+					data={data}
+				/>
+			</div>
+		</>
 	)
 }

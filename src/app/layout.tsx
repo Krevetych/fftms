@@ -1,3 +1,4 @@
+import { NextUIProvider } from '@nextui-org/react'
 import type { Metadata } from 'next'
 import { Roboto } from 'next/font/google'
 import { Toaster } from 'sonner'
@@ -34,12 +35,14 @@ export default function RootLayout({
 		>
 			<body className={zed.className}>
 				<Providers>
-					{children}
-					<Toaster
-						theme='dark'
-						position='bottom-right'
-						duration={1500}
-					/>
+					<NextUIProvider>
+						{children}
+						<Toaster
+							theme='dark'
+							position='bottom-right'
+							duration={1500}
+						/>
+					</NextUIProvider>
 				</Providers>
 			</body>
 		</html>
