@@ -65,7 +65,7 @@ export function Login() {
 
 				<button
 					type='submit'
-					className='text-text p-4 mt-5 bg-card rounded-lg text-xl font-semibold transition-colors duration-300 hover:bg-card/50'
+					className='text-text p-4 mt-5 bg-primary rounded-lg text-xl font-semibold transition-colors hover:bg-primary/80'
 				>
 					{isPending ? <Loader /> : <p>Войти</p>}
 				</button>

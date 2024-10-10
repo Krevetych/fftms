@@ -20,7 +20,10 @@ export function LogoutButton() {
 	return (
 		<div>
 			<button onClick={() => mutate()}>
-				<LogOut size={20} />
+				<LogOut
+					size={20}
+					className='transition-colors hover:text-primary'
+				/>
 			</button>
 		</div>
 	)
