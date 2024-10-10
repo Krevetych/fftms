@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
+import Loader from '@/components/Loader'
+
 import { IAuthForm } from '@/types/auth.types'
 
 import { PAGES } from '@/config/url.config'
@@ -18,7 +20,7 @@ export function Login() {
 
 	const { push } = useRouter()
 
-	const { mutate } = useMutation({
+	const { mutate, isPending } = useMutation({
 		mutationKey: ['login'],
 		mutationFn: (data: IAuthForm) => {
 			return authService.login(data)
@@ -65,7 +67,7 @@ export function Login() {
 					type='submit'
 					className='text-text p-4 mt-5 bg-card rounded-lg text-xl font-semibold transition-colors duration-300 hover:bg-card/50'
 				>
-					Войти
+					{isPending ? <Loader /> : <p>Войти</p>}
 				</button>
 			</form>
 		</div>

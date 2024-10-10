@@ -1,3 +1,4 @@
+import next from 'next'
 import { NextRequest, NextResponse } from 'next/server'
 
 import { PAGES } from './config/url.config'
@@ -22,6 +23,8 @@ export async function middleware(request: NextRequest, response: NextResponse) {
 	if (!refreshToken) {
 		return NextResponse.error()
 	}
+
+	return NextResponse.next()
 }
 
 export const config = {
