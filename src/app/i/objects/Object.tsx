@@ -9,12 +9,12 @@ import { toast } from 'sonner'
 import Loader from '@/components/Loader'
 import NotFoundData from '@/components/NotFoundData'
 
-import { ITeacherCreate } from '@/types/teacher.types'
+import { IObjectCreate } from '@/types/object.types'
 
-import { teacherService } from '@/services/teacher.service'
+import { objectService } from '@/services/object.service'
 
-export function Teachers() {
-	const { register, handleSubmit, reset } = useForm<ITeacherCreate>({
+export function Object() {
+	const { register, handleSubmit, reset } = useForm<IObjectCreate>({
 		mode: 'onChange'
 	})
 
@@ -23,32 +23,32 @@ export function Teachers() {
 	const queryClient = useQueryClient()
 
 	const { mutate } = useMutation({
-		mutationKey: ['teachers-create'],
-		mutationFn: (data: ITeacherCreate) => {
-			return teacherService.create(data)
+		mutationKey: ['objects-create'],
+		mutationFn: (data: IObjectCreate) => {
+			return objectService.create(data)
 		},
 		onSuccess: () => {
-			toast.success('Преподаватель создан')
+			toast.success('Предмет создан')
 			reset()
-			queryClient.invalidateQueries({ queryKey: ['teachers'] })
+			queryClient.invalidateQueries({ queryKey: ['objects'] })
 		}
 	})
 
-	const onSubmit: SubmitHandler<ITeacherCreate> = data => {
-		mutate(data)
-		setModal(false)
-	}
+	const { data, isLoading } = useQuery({
+		queryKey: ['objects'],
+		queryFn: () => {
+			return objectService.getAll()
+		}
+	})
 
 	const handleModal = () => {
 		setModal(!modal)
 	}
 
-	const { data, isLoading } = useQuery({
-		queryKey: ['teachers'],
-		queryFn: () => {
-			return teacherService.getAll()
-		}
-	})
+	const onSubmit: SubmitHandler<IObjectCreate> = data => {
+		mutate(data)
+		setModal(false)
+	}
 
 	return (
 		<>
@@ -67,7 +67,7 @@ export function Teachers() {
 							className='flex flex-col gap-4'
 						>
 							<div className='flex items-center gap-x-4'>
-								<h1 className='text-2xl font-black'>Создание преподавателя</h1>
+								<h1 className='text-2xl font-black'>Создание предмета</h1>
 								<X
 									size={24}
 									onClick={() => setModal(false)}
@@ -76,9 +76,9 @@ export function Teachers() {
 							</div>
 							<div className='flex flex-col gap-2'>
 								<input
-									{...register('fio', { required: true })}
+									{...register('name', { required: true })}
 									type='text'
-									placeholder='ФИО'
+									placeholder='Название'
 									className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
 								/>
 							</div>
@@ -99,16 +99,16 @@ export function Teachers() {
 					<thead>
 						<tr>
 							<th className='text-left p-2 border-b border-gray-700'>ID</th>
-							<th className='text-left p-2 border-b border-gray-700'>ФИО</th>
+							<th className='text-left p-2 border-b border-gray-700'>NAME</th>
 						</tr>
 					</thead>
 					<tbody>
-						{data.map(teacher => (
-							<tr key={teacher.id}>
+						{data.map(object => (
+							<tr key={object.id}>
 								<td className='p-2 border-b border-gray-700'>
-									{`${teacher.id.slice(0, 5)}...`}
+									{`${object.id.slice(0, 5)}...`}
 								</td>
-								<td className='p-2 border-b border-gray-700'>{teacher.fio}</td>
+								<td className='p-2 border-b border-gray-700'>{object.name}</td>
 							</tr>
 						))}
 					</tbody>

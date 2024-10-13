@@ -1,4 +1,4 @@
-import { IUpdateUser, IUser } from '@/types/auth.types'
+import { IUser, IUserCreate } from '@/types/auth.types'
 
 import { axiosWithAuth } from '@/api/interceptors'
 
@@ -17,7 +17,7 @@ class UserService {
 		return res.data
 	}
 
-	async update(id: string, data: IUpdateUser) {
+	async update(id: string, data: IUserCreate) {
 		const res = await axiosWithAuth.patch<IUser>(
 			`${this.URL}/update?id=${id}`,
 			data
@@ -27,7 +27,9 @@ class UserService {
 	}
 
 	async delete(id: string) {
-		const res = await axiosWithAuth.delete<IUser>(`${this.URL}/delete?id=${id}`)
+		const res = await axiosWithAuth.delete<boolean>(
+			`${this.URL}/delete?id=${id}`
+		)
 
 		return res.data
 	}

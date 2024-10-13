@@ -9,7 +9,7 @@ export interface IUser {
 	isAdmin: boolean
 }
 
-export interface IUpdateUser {
+export interface IUserCreate {
 	login?: string
 	password?: string
 	isAdmin?: boolean

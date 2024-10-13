@@ -3,6 +3,12 @@ export interface ITeacher {
 	fio: string
 }
 
-export interface ITeacherForm {
+export interface ITeacherCreate {
 	fio: string
 }
+
+export interface ITeacherUpdate {
+	fio?: string
+}
+
+
