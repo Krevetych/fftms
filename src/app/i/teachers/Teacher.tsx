@@ -98,16 +98,12 @@ export function Teachers() {
 				<table className='w-full mt-4 border-collapse'>
 					<thead>
 						<tr>
-							<th className='text-left p-2 border-b border-gray-700'>ID</th>
 							<th className='text-left p-2 border-b border-gray-700'>ФИО</th>
 						</tr>
 					</thead>
 					<tbody>
 						{data.map(teacher => (
 							<tr key={teacher.id}>
-								<td className='p-2 border-b border-gray-700'>
-									{`${teacher.id.slice(0, 5)}...`}
-								</td>
 								<td className='p-2 border-b border-gray-700'>{teacher.fio}</td>
 							</tr>
 						))}

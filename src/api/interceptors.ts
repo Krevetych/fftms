@@ -1,14 +1,11 @@
 import axios, { type CreateAxiosDefaults } from 'axios'
-import { log } from 'console'
-import { request } from 'http'
-import { config } from 'process'
-import { use } from 'react'
 
 import { errorCatch } from './error'
 import { tokenService } from '@/services/token.service'
 
 const options: CreateAxiosDefaults = {
-	baseURL: 'https://fftms.universal-hub.site',
+	//baseURL: 'https://fftms.universal-hub.site',
+	baseURL: 'http://localhost:8080',
 	headers: {
 		'Content-Type': 'application/json'
 	},

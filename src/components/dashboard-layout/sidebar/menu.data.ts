@@ -4,8 +4,7 @@ import {
 	LayoutDashboard,
 	LibraryBig,
 	NotebookText,
-	School,
-	Users
+	School
 } from 'lucide-react'
 
 import { PAGES } from '@/config/url.config'
@@ -42,10 +41,5 @@ export const MENU: IMenuItem[] = [
 		icon: School,
 		name: 'Преподаватели',
 		link: PAGES.TEACHERS
-	},
-	{
-		icon: Users,
-		name: 'Пользователи',
-		link: PAGES.USERS
 	}
 ]

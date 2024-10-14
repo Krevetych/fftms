@@ -11,6 +11,7 @@ const config: Config = {
 			colors: {
 				bg: '#16171B',
         primary: '#00B275',
+				secondary: '#E5A032',
         text: '#FFFFFF',
         card: '#202125'
 			}

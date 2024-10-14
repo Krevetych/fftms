@@ -10,7 +10,6 @@ class DASHBOARD {
 	PLANS = `${this.root}/plans`
 	SUBJECTS = `${this.root}/subjects`
 	TEACHERS = `${this.root}/teachers`
-	USERS = `${this.root}/users`
 }
 
 export const PAGES = new DASHBOARD()

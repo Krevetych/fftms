@@ -11,12 +11,6 @@ class UserService {
 		return res.data
 	}
 
-	async getAll() {
-		const res = await axiosWithAuth.get<IUser[]>(`${this.URL}/find_all`)
-
-		return res.data
-	}
-
 	async update(id: string, data: IUserCreate) {
 		const res = await axiosWithAuth.patch<IUser>(
 			`${this.URL}/update?id=${id}`,

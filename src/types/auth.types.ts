@@ -6,13 +6,11 @@ export interface IAuthForm {
 export interface IUser {
 	id: string
 	login: string
-	isAdmin: boolean
 }
 
 export interface IUserCreate {
 	login?: string
 	password?: string
-	isAdmin?: boolean
 }
 
 export interface ILoginResponse {

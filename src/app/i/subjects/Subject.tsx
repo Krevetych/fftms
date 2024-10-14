@@ -8,8 +8,8 @@ import { toast } from 'sonner'
 
 import NotFoundData from '@/components/NotFoundData'
 
-import { EKind } from '@/types/group.types'
-import { IObject } from '@/types/object.types'
+import { MONTH, MONTH_HALF, SUBJECT } from '@/constants/table.constants'
+
 import { IPlan } from '@/types/plan.types'
 import { EMonth, EMonthHalf, ISubjectCreate } from '@/types/subject.types'
 
@@ -103,7 +103,7 @@ export function Subject() {
 											key={month}
 											value={month}
 										>
-											{value}
+											{MONTH[value]}
 										</option>
 									))}
 								</select>
@@ -123,7 +123,7 @@ export function Subject() {
 											key={monthHalf}
 											value={monthHalf}
 										>
-											{value}
+											{MONTH_HALF[value]}
 										</option>
 									))}
 								</select>
@@ -174,24 +174,24 @@ export function Subject() {
 				<table className='w-full mt-4 border-collapse'>
 					<thead>
 						<tr>
-							<th className='text-left p-2 border-b border-gray-700'>ID</th>
-							<th className='text-left p-2 border-b border-gray-700'>MONTH</th>
-							<th className='text-left p-2 border-b border-gray-700'>
-								MONTH_HALF
-							</th>
-							<th className='text-left p-2 border-b border-gray-700'>HOURS</th>
-							<th className='text-left p-2 border-b border-gray-700'>PLAN</th>
+							{SUBJECT.map(subject => (
+								<th
+									className='text-left p-2 border-b border-gray-700'
+									key={subject.id}
+								>
+									{subject.title}
+								</th>
+							))}
 						</tr>
 					</thead>
 					<tbody>
 						{subjectsData.map(object => (
 							<tr key={object.id}>
 								<td className='p-2 border-b border-gray-700'>
-									{`${object.id.slice(0, 5)}...`}
+									{MONTH[object.month as EMonth]}
 								</td>
-								<td className='p-2 border-b border-gray-700'>{object.month}</td>
 								<td className='p-2 border-b border-gray-700'>
-									{object.monthHalf}
+									{MONTH_HALF[object.monthHalf as EMonthHalf]}
 								</td>
 								<td className='p-2 border-b border-gray-700'>{object.hours}</td>
 								<td className='p-2 border-b border-gray-700'>

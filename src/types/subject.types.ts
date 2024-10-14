@@ -1,23 +1,23 @@
 import { IPlan } from './plan.types'
 
 export enum EMonth {
-	JANUARY = 'Январь',
-	FEBRUARY = 'Февраль',
-	MARCH = 'Март',
-	APRIL = 'Апрель',
-	MAY = 'Май',
-	JUNE = 'Июнь',
-	JULY = 'Июль',
-	AUGUST = 'Август',
-	SEPTEMBER = 'Сентябрь',
-	OCTOBER = 'Октябрь',
-	NOVEMBER = 'Ноябрь',
-	DECEMBER = 'Декабрь'
+	JANUARY = 'JANUARY',
+	FEBRUARY = 'FEBRUARY',
+	MARCH = 'MARCH',
+	APRIL = 'APRIL',
+	MAY = 'MAY',
+	JUNE = 'JUNE',
+	JULY = 'JULY',
+	AUGUST = 'AUGUST',
+	SEPTEMBER = 'SEPTEMBER',
+	OCTOBER = 'OCTOBER',
+	NOVEMBER = 'NOVEMBER',
+	DECEMBER = 'DECEMBER'
 }
 
 export enum EMonthHalf {
-	FIRST = '1',
-	SECOND = '2'
+	FIRST = 'FIRST',
+	SECOND = 'SECOND'
 }
 
 export interface ISubject {

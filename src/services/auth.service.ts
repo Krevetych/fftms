@@ -11,15 +11,6 @@ import { tokenService } from './token.service'
 class AuthService {
 	private URL = '/auth'
 
-	async register(data: IAuthForm) {
-		const res = await axiosClassic.post<IRegisterResponse>(
-			`${this.URL}/register`,
-			data
-		)
-
-		return res
-	}
-
 	async login(data: IAuthForm) {
 		const res = await axiosClassic.post<ILoginResponse>(
 			`${this.URL}/login`,

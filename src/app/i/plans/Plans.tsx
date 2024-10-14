@@ -8,7 +8,9 @@ import { toast } from 'sonner'
 
 import NotFoundData from '@/components/NotFoundData'
 
-import { EKind, IGroup } from '@/types/group.types'
+import { PLAN, RATE } from '@/constants/table.constants'
+
+import { IGroup } from '@/types/group.types'
 import { IObject } from '@/types/object.types'
 import { ERate, IPlanCreate } from '@/types/plan.types'
 import { ITeacher } from '@/types/teacher.types'
@@ -223,27 +225,23 @@ export function Plans() {
 				<table className='w-full mt-4 border-collapse'>
 					<thead>
 						<tr>
-							<th className='text-left p-2 border-b border-gray-700'>ID</th>
-							<th className='text-left p-2 border-b border-gray-700'>YEAR</th>
-							<th className='text-left p-2 border-b border-gray-700'>RATE</th>
-							<th className='text-left p-2 border-b border-gray-700'>
-								MAX_HOURS
-							</th>
-							<th className='text-left p-2 border-b border-gray-700'>OBJECT</th>
-							<th className='text-left p-2 border-b border-gray-700'>
-								TEACHER
-							</th>
-							<th className='text-left p-2 border-b border-gray-700'>GROUP</th>
+							{PLAN.map(plan => (
+								<th
+									className='text-left p-2 border-b border-gray-700'
+									key={plan.id}
+								>
+									{plan.title}
+								</th>
+							))}
 						</tr>
 					</thead>
 					<tbody>
 						{plansData.map(plan => (
 							<tr key={plan.id}>
-								<td className='p-2 border-b border-gray-700'>
-									{`${plan.id.slice(0, 5)}...`}
-								</td>
 								<td className='p-2 border-b border-gray-700'>{plan.year}</td>
-								<td className='p-2 border-b border-gray-700'>{plan.rate}</td>
+								<td className='p-2 border-b border-gray-700'>
+									{RATE[plan.rate as ERate]}
+								</td>
 								<td className='p-2 border-b border-gray-700'>
 									{plan.maxHours}
 								</td>

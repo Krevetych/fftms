@@ -98,16 +98,14 @@ export function Object() {
 				<table className='w-full mt-4 border-collapse'>
 					<thead>
 						<tr>
-							<th className='text-left p-2 border-b border-gray-700'>ID</th>
-							<th className='text-left p-2 border-b border-gray-700'>NAME</th>
+							<th className='text-left p-2 border-b border-gray-700'>
+								Название предмета
+							</th>
 						</tr>
 					</thead>
 					<tbody>
 						{data.map(object => (
 							<tr key={object.id}>
-								<td className='p-2 border-b border-gray-700'>
-									{`${object.id.slice(0, 5)}...`}
-								</td>
 								<td className='p-2 border-b border-gray-700'>{object.name}</td>
 							</tr>
 						))}

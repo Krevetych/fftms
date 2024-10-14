@@ -8,7 +8,9 @@ import { toast } from 'sonner'
 
 import NotFoundData from '@/components/NotFoundData'
 
-import { EKind, EType, IGroupCreate } from '@/types/group.types'
+import { GROUP, TYPE } from '@/constants/table.constants'
+
+import { EType, IGroupCreate } from '@/types/group.types'
 
 import { groupService } from '@/services/group.service'
 
@@ -83,26 +85,6 @@ export function Groups() {
 								/>
 								<div className='flex gap-x-4'>
 									<select
-										{...register('kind', { required: true })}
-										className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
-									>
-										<option
-											value=''
-											disabled
-											selected
-										>
-											Выберите вид
-										</option>
-										{Object.entries(EKind).map(([kind, value]) => (
-											<option
-												key={kind}
-												value={kind}
-											>
-												{value}
-											</option>
-										))}
-									</select>
-									<select
 										{...register('type', { required: true })}
 										className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
 									>
@@ -140,21 +122,23 @@ export function Groups() {
 				<table className='w-full mt-4 border-collapse'>
 					<thead>
 						<tr>
-							<th className='text-left p-2 border-b border-gray-700'>ID</th>
-							<th className='text-left p-2 border-b border-gray-700'>NAME</th>
-							<th className='text-left p-2 border-b border-gray-700'>KIND</th>
-							<th className='text-left p-2 border-b border-gray-700'>TYPE</th>
+							{GROUP.map(group => (
+								<th
+									className='text-left p-2 border-b border-gray-700'
+									key={group.id}
+								>
+									{group.title}
+								</th>
+							))}
 						</tr>
 					</thead>
 					<tbody>
 						{data.map(group => (
 							<tr key={group.id}>
-								<td className='p-2 border-b border-gray-700'>
-									{`${group.id.slice(0, 5)}...`}
-								</td>
 								<td className='p-2 border-b border-gray-700'>{group.name}</td>
-								<td className='p-2 border-b border-gray-700'>{group.kind}</td>
-								<td className='p-2 border-b border-gray-700'>{group.type}</td>
+								<td className='p-2 border-b border-gray-700'>
+									{TYPE[group.type as EType]}
+								</td>
 							</tr>
 						))}
 					</tbody>

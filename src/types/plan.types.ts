@@ -3,8 +3,8 @@ import { IObject } from './object.types'
 import { ITeacher } from './teacher.types'
 
 export enum ERate {
-	SALARIED = 'Тарифицированная',
-	HOURLY = 'Часовая'
+	SALARIED = 'SALARIED',
+	HOURLY = 'HOURLY'
 }
 
 export interface IPlan {
