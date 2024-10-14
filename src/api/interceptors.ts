@@ -8,7 +8,7 @@ import { errorCatch } from './error'
 import { tokenService } from '@/services/token.service'
 
 const options: CreateAxiosDefaults = {
-	baseURL: 'http://localhost:8080',
+	baseURL: 'https://fftms.universal-hub.site',
 	headers: {
 		'Content-Type': 'application/json'
 	},
