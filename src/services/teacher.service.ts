@@ -19,7 +19,8 @@ class TeacherService {
 
 	async update(id: string, data: ITeacherUpdate) {
 		const res = await axiosWithAuth.patch<ITeacher>(
-			`${this.URL}/update?id=${id}`
+			`${this.URL}/update?id=${id}`,
+			data
 		)
 
 		return res.data

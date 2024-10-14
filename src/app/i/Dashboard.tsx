@@ -14,7 +14,6 @@ import { MONTH, MONTH_HALF, TYPE } from '@/constants/table.constants'
 import { EType } from '@/types/group.types'
 import { IFilters, IPlan } from '@/types/plan.types'
 
-import { Subject } from './subjects/Subject'
 import { planService } from '@/services/plan.service'
 import { teacherService } from '@/services/teacher.service'
 
@@ -168,8 +167,6 @@ export function Dashboard() {
 						{fPlansData.map(plan =>
 							plan.Subject.map(subject => (
 								<tr key={subject.id}>
-									{' '}
-									{/* Добавляем ключ для строки */}
 									<td className='p-2 border-b border-gray-700'>
 										{plan.Object.name}
 									</td>

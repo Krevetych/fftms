@@ -1,4 +1,4 @@
-import { IObject, IObjectCreate } from '@/types/object.types'
+import { IObject, IObjectCreate, IObjectUpdate } from '@/types/object.types'
 
 import { axiosWithAuth } from '@/api/interceptors'
 
@@ -11,7 +11,7 @@ class ObjectService {
 		return res.data
 	}
 
-	async update(id: string, data: IObjectCreate) {
+	async update(id: string, data: IObjectUpdate) {
 		const res = await axiosWithAuth.patch<IObject>(
 			`${this.URL}/update?id=${id}`,
 			data

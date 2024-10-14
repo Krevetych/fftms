@@ -1,4 +1,4 @@
-import { IGroup, IGroupCreate } from '@/types/group.types'
+import { IGroup, IGroupCreate, IGroupUpdate } from '@/types/group.types'
 
 import { axiosWithAuth } from '@/api/interceptors'
 
@@ -12,7 +12,7 @@ class GroupService {
 		return res.data
 	}
 
-	async update(id: string, data: IGroupCreate) {
+	async update(id: string, data: IGroupUpdate) {
 		const res = await axiosWithAuth.patch<IGroup>(
 			`${this.URL}/update?id=${id}`,
 			data
