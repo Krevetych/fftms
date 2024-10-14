@@ -229,7 +229,7 @@ export function Plans() {
 							<th className='text-left p-2 border-b border-gray-700'>
 								MAX_HOURS
 							</th>
-							<th className='text-left p-2 border-b border-gray-700'>Object</th>
+							<th className='text-left p-2 border-b border-gray-700'>OBJECT</th>
 							<th className='text-left p-2 border-b border-gray-700'>
 								TEACHER
 							</th>
@@ -248,12 +248,14 @@ export function Plans() {
 									{plan.maxHours}
 								</td>
 								<td className='p-2 border-b border-gray-700'>
-									{plan.objectId}
+									{plan.Object.name}
 								</td>
 								<td className='p-2 border-b border-gray-700'>
-									{plan.teacherId}
+									{plan.teacher.fio}
 								</td>
-								<td className='p-2 border-b border-gray-700'>{plan.groupId}</td>
+								<td className='p-2 border-b border-gray-700'>
+									{plan.group.name}
+								</td>
 							</tr>
 						))}
 					</tbody>

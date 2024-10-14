@@ -1,3 +1,6 @@
+import { IGroup } from './group.types'
+import { IObject } from './object.types'
+import { ITeacher } from './teacher.types'
 
 export enum ERate {
 	SALARIED = 'Тарифицированная',
@@ -9,9 +12,9 @@ export interface IPlan {
 	year: string
 	rate: ERate
 	maxHours: number
-	objectId: string
-	teacherId: string
-	groupId: string
+	Object: IObject
+	teacher: ITeacher
+	group: IGroup
 }
 
 export interface IPlanCreate {

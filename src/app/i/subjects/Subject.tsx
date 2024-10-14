@@ -195,7 +195,7 @@ export function Subject() {
 								</td>
 								<td className='p-2 border-b border-gray-700'>{object.hours}</td>
 								<td className='p-2 border-b border-gray-700'>
-									{object.planId}
+									{object.plan.year} {object.plan.rate}
 								</td>
 							</tr>
 						))}

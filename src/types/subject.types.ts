@@ -1,3 +1,5 @@
+import { IPlan } from './plan.types'
+
 export enum EMonth {
 	JANUARY = 'Январь',
 	FEBRUARY = 'Февраль',
@@ -23,7 +25,7 @@ export interface ISubject {
 	month: EMonth
 	monthHalf: EMonthHalf
 	hours: number
-	planId: string
+	plan: IPlan
 }
 
 export interface ISubjectCreate {
