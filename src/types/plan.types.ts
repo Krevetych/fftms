@@ -1,5 +1,6 @@
 import { IGroup } from './group.types'
 import { IObject } from './object.types'
+import { EMonth, EMonthHalf, ISubject } from './subject.types'
 import { ITeacher } from './teacher.types'
 
 export enum ERate {
@@ -15,6 +16,24 @@ export interface IPlan {
 	Object: IObject
 	teacher: ITeacher
 	group: IGroup
+}
+
+export interface IFilteredPlan {
+	id: string
+	year: string
+	rate: ERate
+	maxHours: number
+	Object: IObject
+	teacher: ITeacher
+	group: IGroup
+	Subject: ISubject[]
+}
+
+export interface IFilters {
+	year: string
+	teacher: string
+	month: EMonth
+	monthHalf: EMonthHalf
 }
 
 export interface IPlanCreate {

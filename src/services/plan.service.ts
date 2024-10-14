@@ -1,4 +1,10 @@
-import { IPlan, IPlanCreate, IPlanUpdate } from '@/types/plan.types'
+import {
+	IFilteredPlan,
+	IFilters,
+	IPlan,
+	IPlanCreate,
+	IPlanUpdate
+} from '@/types/plan.types'
 
 import { axiosWithAuth } from '@/api/interceptors'
 
@@ -16,6 +22,14 @@ class PlanService {
 		const res = await axiosWithAuth.patch<IPlan>(
 			`${this.URL}/update?id=${id}`,
 			data
+		)
+
+		return res.data
+	}
+
+	async getFiltered(data: IFilters | undefined) {
+		const res = await axiosWithAuth.get<IFilteredPlan[]>(
+			`${this.URL}/find_by_filters?year=${data?.year}&teacher=${data?.teacher}&month=${data?.month}&monthHalf=${data?.monthHalf}`
 		)
 
 		return res.data
