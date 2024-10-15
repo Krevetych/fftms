@@ -1,8 +1,9 @@
 import { Metadata } from 'next'
+import { redirect } from 'next/navigation'
 
 import { NO_INDEX_PAGE } from '@/constants/seo.constants'
-import { notFound } from 'next/navigation'
 
+import { PAGES } from '@/config/url.config'
 
 export const metadata: Metadata = {
 	title: 'Auth',
@@ -10,5 +11,5 @@ export const metadata: Metadata = {
 }
 
 export default function AuthPage() {
-    notFound()
+	redirect(PAGES.LOGIN)
 }

@@ -36,7 +36,7 @@ export function Teachers() {
 		},
 		onSuccess: () => {
 			toast.success(
-				`Преподаватель ${actionType === 'edit' ? 'обновлён' : 'создан'}`
+				`Запись ${actionType === 'edit' ? 'обновлена' : 'создана'}`
 			)
 			reset()
 			setSelectedTeacher(null)
@@ -50,7 +50,7 @@ export function Teachers() {
 		mutationKey: ['teachers-delete'],
 		mutationFn: (id: string) => teacherService.delete(id),
 		onSuccess: () => {
-			toast.success('Преподаватель удалён')
+			toast.success('Запись удалена')
 			queryClient.invalidateQueries({ queryKey: ['teachers'] })
 		}
 	})

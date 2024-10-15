@@ -1,6 +1,7 @@
 import {
 	BookUser,
 	Captions,
+	Hourglass,
 	LayoutDashboard,
 	LibraryBig,
 	NotebookText,
@@ -23,9 +24,14 @@ export const MENU: IMenuItem[] = [
 		link: PAGES.PLANS
 	},
 	{
+		icon: Hourglass,
+		name: 'Вычитанные часы (Час)',
+		link: PAGES.SUBJECTS_H
+	},
+	{
 		icon: Captions,
-		name: 'Вычитанные часы',
-		link: PAGES.SUBJECTS
+		name: 'Вычитанные часы (Тариф)',
+		link: PAGES.SUBJECTS_T
 	},
 	{
 		icon: BookUser,

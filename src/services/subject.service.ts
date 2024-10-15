@@ -1,3 +1,4 @@
+import { ERate } from '@/types/plan.types'
 import { ISubject, ISubjectCreate, ISubjectUpdate } from '@/types/subject.types'
 
 import { axiosWithAuth } from '@/api/interceptors'
@@ -21,8 +22,10 @@ class SubjectService {
 		return res.data
 	}
 
-	async getAll() {
-		const res = await axiosWithAuth.get<ISubject[]>(`${this.URL}/find_all`)
+	async getByRate(rate: ERate) {
+		const res = await axiosWithAuth.get<ISubject[]>(
+			`${this.URL}/find_by_rate?rate=${rate}`
+		)
 
 		return res.data
 	}

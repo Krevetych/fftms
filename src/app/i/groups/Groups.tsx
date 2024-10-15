@@ -36,7 +36,7 @@ export function Groups() {
 			return groupService.create(data as IGroupCreate)
 		},
 		onSuccess: () => {
-			toast.success(`Группа ${actionType === 'edit' ? 'обновлена' : 'создана'}`)
+			toast.success(`Запись ${actionType === 'edit' ? 'обновлена' : 'создана'}`)
 			reset()
 			setSelectedGroup(null)
 			setActionType(null)
@@ -49,7 +49,7 @@ export function Groups() {
 		mutationKey: ['groups-delete'],
 		mutationFn: (id: string) => groupService.delete(id),
 		onSuccess: () => {
-			toast.success('Группа удалена')
+			toast.success('Запись удалена')
 			queryClient.invalidateQueries({ queryKey: ['groups'] })
 		}
 	})

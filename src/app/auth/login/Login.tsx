@@ -1,6 +1,8 @@
 'use client'
 
 import { useMutation } from '@tanstack/react-query'
+import { AxiosError } from 'axios'
+import { log } from 'console'
 import { useRouter } from 'next/navigation'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -29,6 +31,18 @@ export function Login() {
 			toast.success('Вход выполнен успешно')
 			reset()
 			push(PAGES.HOME)
+		},
+		onError: (error: AxiosError) => {
+			const errorMessage = (error.response?.data as { message: string })
+				?.message
+
+			if (errorMessage === 'Invalid password') {
+				toast.error('Неверный логин или пароль')
+			}
+
+			if (errorMessage === 'User not found') {
+				toast.error('Пользователь не найден')
+			}
 		}
 	})
 

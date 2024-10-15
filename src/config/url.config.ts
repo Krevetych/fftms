@@ -8,7 +8,8 @@ class DASHBOARD {
 	GROUPS = `${this.root}/groups`
 	OBJECTS = `${this.root}/objects`
 	PLANS = `${this.root}/plans`
-	SUBJECTS = `${this.root}/subjects`
+	SUBJECTS_H = `${this.root}/subjects/hourly`
+	SUBJECTS_T = `${this.root}/subjects/salaried`
 	TEACHERS = `${this.root}/teachers`
 }
 

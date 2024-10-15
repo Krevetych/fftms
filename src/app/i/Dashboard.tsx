@@ -1,17 +1,17 @@
 'use client'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Check } from 'lucide-react'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
 import Loader from '@/components/Loader'
 import NotFoundData from '@/components/NotFoundData'
+import PlanTable from '@/components/PlanTable'
+import SelectInput from '@/components/SelectInput'
 
 import { MONTH, MONTH_HALF, TYPE } from '@/constants/table.constants'
 
-import { EType } from '@/types/group.types'
 import { IFilters, IPlan } from '@/types/plan.types'
 import { EMonth, EMonthHalf, ISubjectCreate } from '@/types/subject.types'
 
@@ -19,7 +19,7 @@ import { planService } from '@/services/plan.service'
 import { subjectService } from '@/services/subject.service'
 import { teacherService } from '@/services/teacher.service'
 
-interface ISubjectForm {
+export interface ISubjectForm {
 	year: string
 	teacher: string
 	month: EMonth
@@ -37,30 +37,29 @@ export function Dashboard() {
 			mode: 'onChange'
 		})
 
+	const queryClient = useQueryClient()
+	const [filters, setFilters] = useState<IFilters>()
+	const [editingSubject, setEditingSubject] = useState<string | null>(null)
+
 	const { data: teachersData, isLoading: isLoadingTeachers } = useQuery({
 		queryKey: ['teachers'],
-		queryFn: () => teacherService.getAll()
+		queryFn: () => teacherService.getAll(),
+		staleTime: 1000 * 60 * 5
 	})
 
 	const { data: plansData, isLoading: isLoadingPlans } = useQuery({
 		queryKey: ['plans'],
-		queryFn: () => planService.getAll()
+		queryFn: () => planService.getAll(),
+		staleTime: 1000 * 60 * 5
 	})
 
 	const uniqueYears = Array.from(
 		new Set(plansData?.map((plan: IPlan) => plan.year))
 	)
 
-	const [filters, setFilters] = useState<IFilters>()
-	const [editingSubject, setEditingSubject] = useState<string | null>(null)
-	const queryClient = useQueryClient()
-
 	const { data: fPlansData, isLoading: isLoadingFPlans } = useQuery({
 		queryKey: ['f-plans', filters],
-		queryFn: () => {
-			if (!filters) return Promise.resolve([])
-			return planService.getFiltered(filters)
-		},
+		queryFn: () => (filters ? planService.getFiltered(filters) : []),
 		enabled: !!filters
 	})
 
@@ -68,21 +67,23 @@ export function Dashboard() {
 		mutationFn: async (
 			subjectData: ISubjectCreate & { subjectId?: string }
 		) => {
-			if (subjectData.subjectId) {
-				return subjectService.update(subjectData.subjectId, {
-					month: subjectData.month,
-					monthHalf: subjectData.monthHalf,
-					hours: subjectData.hours,
-					planId: subjectData.planId
-				})
-			} else {
-				return subjectService.create(subjectData)
-			}
+			return subjectData.subjectId
+				? subjectService.update(subjectData.subjectId, {
+						month: subjectData.month,
+						monthHalf: subjectData.monthHalf,
+						hours: subjectData.hours,
+						planId: subjectData.planId
+					})
+				: subjectService.create(subjectData)
 		},
 		onSuccess: () => {
-			toast.success('Запись успешно сохранена')
-			queryClient.invalidateQueries({ queryKey: ['subjects', 'f-plans'] })
-			queryClient.invalidateQueries({ queryKey: ['f-plans', filters] })
+			toast.success(`Запись ${editingSubject ? 'обновлена' : 'создана'}`)
+			queryClient.invalidateQueries({
+				queryKey: ['f-plans', filters]
+			})
+			queryClient.invalidateQueries({
+				queryKey: ['subjects']
+			})
 			setEditingSubject(null)
 		},
 		onError: () => {
@@ -91,14 +92,12 @@ export function Dashboard() {
 	})
 
 	const onSubmit: SubmitHandler<ISubjectForm> = data => {
-		const appliedFilters: IFilters = {
+		setFilters({
 			year: data.year || '',
 			teacher: data.teacher || '',
 			month: data.month || '',
 			monthHalf: data.monthHalf || ''
-		}
-
-		setFilters(appliedFilters)
+		})
 		setEditingSubject(null)
 	}
 
@@ -112,22 +111,13 @@ export function Dashboard() {
 		const plan = await planService.getByid(planId)
 
 		if (plan) {
-			if (subjectId === 'new') {
-				await mutation.mutateAsync({
-					month: month,
-					monthHalf: monthHalf,
-					hours: Number(subjectData),
-					planId: planId
-				})
-			} else {
-				await mutation.mutateAsync({
-					month: month,
-					monthHalf: monthHalf,
-					hours: Number(subjectData),
-					planId: planId,
-					subjectId: subjectId
-				})
-			}
+			await mutation.mutateAsync({
+				subjectId: subjectId !== 'new' ? subjectId : undefined,
+				month,
+				monthHalf,
+				hours: Number(subjectData),
+				planId
+			})
 		}
 	}
 
@@ -136,7 +126,6 @@ export function Dashboard() {
 	}
 
 	const handleBlur = async (subjectId: string, planId: string) => {
-		setEditingSubject(null)
 		await handleCreateSubject(
 			subjectId,
 			planId,
@@ -152,75 +141,42 @@ export function Dashboard() {
 				onSubmit={handleSubmit(onSubmit)}
 				className='flex flex-col gap-y-2'
 			>
-				<div className='flex justify-between'>
+				<div className='flex justify-around'>
 					<div>
-						<select
+						<SelectInput
+							label='Год'
+							options={uniqueYears.map(year => ({ value: year, label: year }))}
 							{...register('year', { required: true })}
-							className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
-						>
-							<option value=''>Выберите год</option>
-							{uniqueYears.map(year => (
-								<option
-									key={year}
-									value={year}
-								>
-									{year}
-								</option>
-							))}
-						</select>
-
-						<select
-							id='teacher'
+						/>
+						<SelectInput
+							label='Преподаватель'
+							options={
+								teachersData?.map(teacher => ({
+									value: teacher.fio,
+									label: teacher.fio
+								})) || []
+							}
+							loading={isLoadingTeachers}
 							{...register('teacher', { required: true })}
-							className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
-						>
-							<option value=''>Выберите преподавателя</option>
-							{isLoadingTeachers ? (
-								<option>Загрузка...</option>
-							) : (
-								teachersData?.map(teacher => (
-									<option
-										key={teacher.id}
-										value={teacher.fio}
-									>
-										{teacher.fio}
-									</option>
-								))
-							)}
-						</select>
+						/>
 					</div>
-
 					<div>
-						<select
-							id='month'
+						<SelectInput
+							label='Месяц'
+							options={Object.entries(MONTH).map(([key, value]) => ({
+								value: key as EMonth,
+								label: value
+							}))}
 							{...register('month', { required: true })}
-							className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
-						>
-							<option value=''>Выберите месяц</option>
-							{Object.entries(MONTH).map(([key, value]) => (
-								<option
-									key={key}
-									value={key as EMonth}
-								>
-									{value}
-								</option>
-							))}
-						</select>
-						<select
-							id='monthHalf'
+						/>
+						<SelectInput
+							label='Половина месяца'
+							options={Object.entries(MONTH_HALF).map(([key, value]) => ({
+								value: key as EMonthHalf,
+								label: value
+							}))}
 							{...register('monthHalf', { required: true })}
-							className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
-						>
-							<option value=''>Выберите половину месяца</option>
-							{Object.entries(MONTH_HALF).map(([key, value]) => (
-								<option
-									key={key}
-									value={key as EMonthHalf}
-								>
-									{value}
-								</option>
-							))}
-						</select>
+						/>
 					</div>
 				</div>
 				<button
@@ -232,104 +188,16 @@ export function Dashboard() {
 			</form>
 			{isLoadingFPlans ? (
 				<Loader />
-			) : fPlansData && fPlansData.length > 0 ? (
-				<table className='w-full mt-4 border-collapse'>
-					<thead>
-						<tr>
-							<th className='text-left p-2 border-b border-gray-700'>
-								Предмет
-							</th>
-							<th className='text-left p-2 border-b border-gray-700'>Группа</th>
-							<th className='text-left p-2 border-b border-gray-700'>Тип</th>
-							<th className='text-left p-2 border-b border-gray-700'>
-								Остаток часов
-							</th>
-							<th className='text-left p-2 border-b border-gray-700'>
-								Вычитанные часы
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						{fPlansData.map(plan => (
-							<tr key={plan.id}>
-								<td className='p-2 border-b border-gray-700'>
-									{plan.Object.name}
-								</td>
-								<td className='p-2 border-b border-gray-700'>
-									{plan.group.name}
-								</td>
-								<td className='p-2 border-b border-gray-700'>
-									{TYPE[plan.group.type as EType]}
-								</td>
-								<td className='p-2 border-b border-gray-700'>
-									{plan.maxHours}
-								</td>
-
-								{plan.Subject.length > 0 ? (
-									plan.Subject.map(subject => (
-										<td
-											key={subject.id}
-											className='p-2 border-b border-gray-700 '
-										>
-											<div className='flex items-center gap-x-3'>
-												{editingSubject === subject.id ? (
-													<>
-														<input
-															type='text'
-															{...register(`subjects.${subject.id}.hours`, {
-																required: true
-															})}
-															className='p-3 w-1/2 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal outline-none border-none'
-															defaultValue={subject.hours}
-															onBlur={() => handleBlur(subject.id, plan.id)}
-														/>
-														<Check
-															onClick={async () =>
-																await handleCreateSubject(
-																	subject.id,
-																	plan.id,
-																	getValues('month') as EMonth,
-																	getValues('monthHalf') as EMonthHalf
-																)
-															}
-															className='cursor-pointer text-primary hover:text-primary/80'
-														/>
-													</>
-												) : (
-													<span onClick={() => handleHoursClick(subject.id)}>
-														{subject.hours}
-													</span>
-												)}
-											</div>
-										</td>
-									))
-								) : (
-									<td className='p-2 border-b border-gray-700 '>
-										<div className='flex items-center gap-x-3'>
-											<input
-												type='text'
-												{...register(`subjects.new.hours`, { required: true })}
-												placeholder='Введите часы'
-												className='p-3 w-1/2 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal outline-none border-none'
-											/>
-											<Check
-												onClick={async () =>
-													await handleCreateSubject(
-														'new',
-														plan.id,
-														getValues('month') as EMonth,
-														getValues('monthHalf') as EMonthHalf
-													)
-												}
-												className='cursor-pointer text-primary hover:text-primary/80'
-											/>
-										</div>
-									</td>
-								)}
-							</tr>
-						))}
-					</tbody>
-				</table>
+			) : fPlansData?.length ? (
+				<PlanTable
+					plans={fPlansData}
+					editingSubject={editingSubject}
+					handleHoursClick={handleHoursClick}
+					handleBlur={handleBlur}
+					register={register}
+					getValues={getValues}
+					handleCreateSubject={handleCreateSubject}
+				/>
 			) : (
 				<NotFoundData />
 			)}

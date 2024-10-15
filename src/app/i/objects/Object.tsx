@@ -35,7 +35,7 @@ export function Object() {
 			return objectService.create(data as IObjectCreate)
 		},
 		onSuccess: () => {
-			toast.success(`Предмет ${actionType === 'edit' ? 'обновлён' : 'создан'}`)
+			toast.success(`Запись ${actionType === 'edit' ? 'обновлена' : 'создана'}`)
 			reset()
 			setSelectedObject(null)
 			setActionType(null)
@@ -48,7 +48,7 @@ export function Object() {
 		mutationKey: ['objects-delete'],
 		mutationFn: (id: string) => objectService.delete(id),
 		onSuccess: () => {
-			toast.success('Предмет удалён')
+			toast.success('Запись удалена')
 			queryClient.invalidateQueries({ queryKey: ['objects'] })
 		}
 	})

@@ -40,7 +40,7 @@ export function Plans() {
 			return planService.create(data as IPlanCreate)
 		},
 		onSuccess: () => {
-			toast.success(`План ${actionType === 'edit' ? 'обновлён' : 'создан'}`)
+			toast.success(`Запись ${actionType === 'edit' ? 'обновлена' : 'создана'}`)
 			reset()
 			setSelectedPlan(null)
 			setActionType(null)
@@ -53,7 +53,7 @@ export function Plans() {
 		mutationKey: ['plans-delete'],
 		mutationFn: (id: string) => planService.delete(id),
 		onSuccess: () => {
-			toast.success('План удалён')
+			toast.success('Запись удалена')
 			queryClient.invalidateQueries({ queryKey: ['plans'] })
 		}
 	})
