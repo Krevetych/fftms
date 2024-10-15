@@ -12,7 +12,11 @@ class PlanService {
 	private URL = '/plan'
 
 	async create(data: IPlanCreate) {
-		const dto: IPlanCreate = { ...data, maxHours: Number(data.maxHours) }
+		const dto: IPlanCreate = {
+			...data,
+			maxHours: Number(data.maxHours),
+			worked: 0
+		}
 		const res = await axiosWithAuth.post<IPlan>(`${this.URL}/create`, dto)
 
 		return res.data
@@ -37,6 +41,14 @@ class PlanService {
 
 	async getAll() {
 		const res = await axiosWithAuth.get<IPlan[]>(`${this.URL}/find_all`)
+
+		return res.data
+	}
+
+	async getByid(id: string) {
+		const res = await axiosWithAuth.get<IPlan>(
+			`${this.URL}/find_by_id?id=${id}`
+		)
 
 		return res.data
 	}

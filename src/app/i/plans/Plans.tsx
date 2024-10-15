@@ -104,6 +104,11 @@ export function Plans() {
 		queryFn: () => groupService.getAll()
 	})
 
+	const year = () => {
+		const year = new Date().getFullYear()
+		return `${year}-${year + 1}`
+	}
+
 	return (
 		<>
 			<div className='flex items-center gap-2'>
@@ -145,6 +150,7 @@ export function Plans() {
 											{...register('year', { required: true })}
 											type='text'
 											placeholder='Учебный год'
+											value={year()}
 											className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
 										/>
 										<select
@@ -292,6 +298,9 @@ export function Plans() {
 								Макс. кол-во часов
 							</th>
 							<th className='text-left p-2 border-b border-gray-700'>
+								Отработанные часы
+							</th>
+							<th className='text-left p-2 border-b border-gray-700'>
 								Предмет
 							</th>
 							<th className='text-left p-2 border-b border-gray-700'>
@@ -312,6 +321,9 @@ export function Plans() {
 								</td>
 								<td className='p-2 border-b border-gray-700'>
 									{plan.maxHours}
+								</td>
+								<td className='p-2 border-b border-gray-700'>
+									{plan.worked}
 								</td>
 								<td className='p-2 border-b border-gray-700'>
 									{plan.Object.name}

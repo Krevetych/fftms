@@ -107,13 +107,13 @@ export function Subject() {
 
 	return (
 		<>
-			<div
+			{/* <div
 				className='flex items-center gap-2 p-3 bg-primary w-fit rounded-lg transition-colors cursor-pointer hover:bg-primary/80'
 				onClick={() => handleModal('create')}
 			>
 				<Plus />
 				<p>Создать</p>
-			</div>
+			</div> */}
 			{modal && (
 				<div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'>
 					<div className='bg-bg p-4 rounded-lg shadow-lg'>

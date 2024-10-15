@@ -13,6 +13,7 @@ export interface IPlan {
 	year: string
 	rate: ERate
 	maxHours: number
+	worked: number
 	Object: IObject
 	teacher: ITeacher
 	group: IGroup
@@ -40,6 +41,7 @@ export interface IPlanCreate {
 	year: string
 	rate: ERate
 	maxHours: number
+	worked: number
 	objectId: string
 	teacherId: string
 	groupId: string
