@@ -7,8 +7,6 @@ export enum EMonth {
 	APRIL = 'APRIL',
 	MAY = 'MAY',
 	JUNE = 'JUNE',
-	JULY = 'JULY',
-	AUGUST = 'AUGUST',
 	SEPTEMBER = 'SEPTEMBER',
 	OCTOBER = 'OCTOBER',
 	NOVEMBER = 'NOVEMBER',
@@ -16,6 +14,11 @@ export enum EMonth {
 }
 
 export enum EMonthHalf {
+	FIRST = 'FIRST',
+	SECOND = 'SECOND'
+}
+
+export enum ETerm {
 	FIRST = 'FIRST',
 	SECOND = 'SECOND'
 }
@@ -38,6 +41,25 @@ export interface ISubjectCreate {
 export interface ISubjectUpdate {
 	month?: EMonth
 	monthHalf?: EMonthHalf
+	hours?: number
+	planId?: string
+}
+
+export interface ISubjectTerm {
+	id: string
+	term: ETerm
+	hours: number
+	plan: IPlan
+}
+
+export interface ISubjectTermCreate {
+	term: ETerm
+	hours: number
+	planId: string
+}
+
+export interface ISubjectTermUpdate {
+	term?: ETerm
 	hours?: number
 	planId?: string
 }

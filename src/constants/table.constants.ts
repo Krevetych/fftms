@@ -1,6 +1,6 @@
-import { EType } from '@/types/group.types'
+import { ECourse, EStatus, EType } from '@/types/group.types'
 import { ERate } from '@/types/plan.types'
-import { EMonth, EMonthHalf } from '@/types/subject.types'
+import { EMonth, EMonthHalf, ETerm } from '@/types/subject.types'
 
 export const RATE: Record<ERate, string> = {
 	[ERate.HOURLY]: 'Почасовая',
@@ -53,6 +53,21 @@ export const SUBJECT = [
 	}
 ]
 
+export const SUBJECT_RATE = [
+	{
+		id: 1,
+		title: 'Семестр'
+	},
+	{
+		id: 3,
+		title: 'Часы'
+	},
+	{
+		id: 4,
+		title: 'План'
+	}
+]
+
 export const MONTH: Record<EMonth, string> = {
 	[EMonth.JANUARY]: 'Январь',
 	[EMonth.FEBRUARY]: 'Февраль',
@@ -60,8 +75,6 @@ export const MONTH: Record<EMonth, string> = {
 	[EMonth.APRIL]: 'Апрель',
 	[EMonth.MAY]: 'Май',
 	[EMonth.JUNE]: 'Июнь',
-	[EMonth.JULY]: 'Июль',
-	[EMonth.AUGUST]: 'Август',
 	[EMonth.SEPTEMBER]: 'Сентябрь',
 	[EMonth.OCTOBER]: 'Октябрь',
 	[EMonth.NOVEMBER]: 'Ноябрь',
@@ -80,7 +93,15 @@ export const GROUP = [
 	},
 	{
 		id: 2,
+		title: 'Курс'
+	},
+	{
+		id: 3,
 		title: 'Тип группы'
+	},
+	{
+		id: 4,
+		title: 'Статус'
 	}
 ]
 
@@ -88,4 +109,27 @@ export const TYPE: Record<EType, string> = {
 	[EType.NPO]: 'НПО',
 	[EType.BUDGET]: 'Бюджетная',
 	[EType.NON_BUDGET]: 'Небюджетная'
+}
+
+export const COURSE: Record<ECourse, string> = {
+	[ECourse.FIRST]: '1',
+	[ECourse.SECOND]: '2',
+	[ECourse.THIRD]: '3',
+	[ECourse.FOURTH]: '4',
+	[ECourse.INACTIVE]: '-'
+}
+
+export const GROUP_STATUS: Record<EStatus, string> = {
+	[EStatus.ACTIVE]: 'Активная',
+	[EStatus.INACTIVE]: 'Выпуск'
+}
+
+export const PLAN_STATUS: Record<EStatus, string> = {
+	[EStatus.ACTIVE]: 'Активный',
+	[EStatus.INACTIVE]: 'Выпуск'
+}
+
+export const TERM: Record<ETerm, string> = {
+	[ETerm.FIRST]: '1',
+	[ETerm.SECOND]: '2'
 }

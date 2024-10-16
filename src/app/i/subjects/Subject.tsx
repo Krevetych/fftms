@@ -1,18 +1,32 @@
 'use client'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { group } from 'console'
 import { Loader, Trash } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
 import NotFoundData from '@/components/NotFoundData'
 
-import { MONTH, MONTH_HALF, SUBJECT } from '@/constants/table.constants'
+import {
+	MONTH,
+	MONTH_HALF,
+	RATE,
+	SUBJECT,
+	SUBJECT_RATE,
+	TERM
+} from '@/constants/table.constants'
 
-import { EMonth, EMonthHalf } from '@/types/subject.types'
+import { ERate } from '@/types/plan.types'
+import {
+	EMonth,
+	EMonthHalf,
+	ETerm,
+	ISubject,
+	ISubjectTerm
+} from '@/types/subject.types'
 
 import { subjectService } from '@/services/subject.service'
-import { ERate } from '@/types/plan.types'
 
 export function Subject({ rate }: { rate: ERate }) {
 	const [modal, setModal] = useState(false)
@@ -21,8 +35,8 @@ export function Subject({ rate }: { rate: ERate }) {
 	const queryClient = useQueryClient()
 
 	const { mutate: deleteSubject } = useMutation({
-		mutationKey: ['subjects-delete'],
-		mutationFn: (id: string) => subjectService.delete(id),
+		mutationKey: ['subjects-delete', rate],
+		mutationFn: (id: string) => subjectService.delete(id, rate),
 		onSuccess: () => {
 			toast.success('Запись удалена')
 			queryClient.invalidateQueries({ queryKey: ['subjects'] })
@@ -74,43 +88,81 @@ export function Subject({ rate }: { rate: ERate }) {
 				<table className='w-full mt-4 border-collapse'>
 					<thead>
 						<tr>
-							{SUBJECT.map(subject => (
-								<th
-									className='text-left p-2 border-b border-gray-700'
-									key={subject.id}
-								>
-									{subject.title}
-								</th>
-							))}
+							{rate === ERate.HOURLY
+								? SUBJECT.map(subject => (
+										<th
+											className='text-left p-2 border-b border-gray-700'
+											key={subject.id}
+										>
+											{subject.title}
+										</th>
+									))
+								: SUBJECT_RATE.map(subject => (
+										<th
+											className='text-left p-2 border-b border-gray-700'
+											key={subject.id}
+										>
+											{subject.title}
+										</th>
+									))}
 							<th className='text-left p-2 border-b border-gray-700'>
 								Действия
 							</th>
 						</tr>
 					</thead>
 					<tbody>
-						{subjectsData.map(object => (
-							<tr key={object.id}>
-								<td className='p-2 border-b border-gray-700'>
-									{MONTH[object.month as EMonth]}
-								</td>
-								<td className='p-2 border-b border-gray-700'>
-									{MONTH_HALF[object.monthHalf as EMonthHalf]}
-								</td>
-								<td className='p-2 border-b border-gray-700'>{object.hours}</td>
-								<td className='p-2 border-b border-gray-700'>
-									{object.plan.year} {object.plan.rate}
-								</td>
-								<td className='p-2 border-b border-gray-700'>
-									<div className='flex gap-x-2'>
-										<Trash
-											size={20}
-											onClick={() => handleModal(object)}
-											className='cursor-pointer text-red-500 hover:text-red-700'
-										/>
-									</div>
-								</td>
-							</tr>
-						))}
+						{subjectsData.map(object => {
+							const isSalaried = object.plan.rate !== ERate.SALARIED
+
+							return (
+								<tr key={object.id}>
+									{isSalaried ? (
+										<>
+											<td className='p-2 border-b border-gray-700'>
+												{MONTH[(object as ISubject).month as EMonth]}
+											</td>
+											<td className='p-2 border-b border-gray-700'>
+												{
+													MONTH_HALF[
+														(object as ISubject).monthHalf as EMonthHalf
+													]
+												}
+											</td>
+										</>
+									) : (
+										<td className='p-2 border-b border-gray-700'>
+											{TERM[(object as ISubjectTerm).term as ETerm]}
+										</td>
+									)}
+									<td className='p-2 border-b border-gray-700'>
+										{object.hours}
+									</td>
+									<td className='p-2 border-b border-gray-700'>
+										<div className='relative group cursor-pointer'>
+											<span className='block overflow-hidden whitespace-nowrap text-ellipsis max-w-[20ch]'>
+												{object.plan.year}-{RATE[object.plan.rate as ERate]}-
+												{object.plan.teacher.fio}-{object.plan.group.name}-
+												{object.plan.Object.name}
+											</span>
+											<span className='absolute left-0 w-full bg-card text-text transition-opacity font-semibold border border-solid border-primary duration-500 opacity-0 group-hover:opacity-100 mt-2 z-10 p-2 rounded shadow-lg'>
+												{object.plan.year}-{RATE[object.plan.rate as ERate]}-
+												{object.plan.teacher.fio}-{object.plan.group.name}-
+												{object.plan.Object.name}
+											</span>
+										</div>
+									</td>
+									<td className='p-2 border-b border-gray-700'>
+										<div className='flex gap-x-2'>
+											<Trash
+												size={20}
+												onClick={() => handleModal(object)}
+												className='cursor-pointer text-red-500 hover:text-red-700'
+											/>
+										</div>
+									</td>
+								</tr>
+							)
+						})}
 					</tbody>
 				</table>
 			) : (

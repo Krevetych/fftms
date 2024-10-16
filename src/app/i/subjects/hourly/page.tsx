@@ -7,7 +7,7 @@ import { Subject } from '../Subject'
 export default function SubjectsHourlyPage() {
 	return (
 		<>
-			<Heading title='Вычитанные часы (почасовой тариф)' />
+			<Heading title='Вычитанные часы (почасая оплата)' />
 			<Subject rate={ERate.HOURLY} />
 		</>
 	)

@@ -10,7 +10,7 @@ export default function DashboardLayout({
 	return (
 		<div className='grid h-screen gap-x-5 grid-cols-[1.4fr_6fr] p-5'>
 			<Sidebar />
-			<main className='overflow-x-hidden relative bg-card rounded-2xl p-4'>
+			<main className='overflow-x-hidden h-full relative bg-card rounded-2xl p-4'>
 				{children}
 			</main>
 		</div>

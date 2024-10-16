@@ -9,8 +9,9 @@ import { toast } from 'sonner'
 import Loader from '@/components/Loader'
 import NotFoundData from '@/components/NotFoundData'
 
-import { RATE } from '@/constants/table.constants'
+import { GROUP_STATUS, PLAN_STATUS, RATE } from '@/constants/table.constants'
 
+import { EStatus } from '@/types/group.types'
 import { ERate, IPlanCreate, IPlanUpdate } from '@/types/plan.types'
 
 import { groupService } from '@/services/group.service'
@@ -71,6 +72,7 @@ export function Plans() {
 			setValue('year', plan.year)
 			setValue('rate', plan.rate)
 			setValue('maxHours', plan.maxHours)
+			setValue('status', plan.status)
 			setValue('objectId', plan.objectId)
 			setValue('teacherId', plan.teacherId)
 			setValue('groupId', plan.groupId)
@@ -251,6 +253,26 @@ export function Plans() {
 												))
 											)}
 										</select>
+										<select
+											{...register('status', { required: true })}
+											className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
+										>
+											<option
+												value=''
+												disabled
+												selected
+											>
+												Выберите статус
+											</option>
+											{Object.entries(EStatus).map(([status, value]) => (
+												<option
+													key={status}
+													value={status}
+												>
+													{PLAN_STATUS[value]}
+												</option>
+											))}
+										</select>
 									</div>
 									<button
 										type='submit'
@@ -287,71 +309,87 @@ export function Plans() {
 			{isLoading ? (
 				<Loader />
 			) : data?.length !== 0 && data ? (
-				<table className='w-full mt-4 border-collapse'>
-					<thead>
-						<tr>
-							<th className='text-left p-2 border-b border-gray-700'>
-								Учебный год
-							</th>
-							<th className='text-left p-2 border-b border-gray-700'>Тариф</th>
-							<th className='text-left p-2 border-b border-gray-700'>
-								Макс. кол-во часов
-							</th>
-							<th className='text-left p-2 border-b border-gray-700'>
-								Отработанные часы
-							</th>
-							<th className='text-left p-2 border-b border-gray-700'>
-								Предмет
-							</th>
-							<th className='text-left p-2 border-b border-gray-700'>
-								Преподаватель
-							</th>
-							<th className='text-left p-2 border-b border-gray-700'>Группа</th>
-							<th className='text-left p-2 border-b border-gray-700'>
-								Действия
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						{data.map(plan => (
-							<tr key={plan.id}>
-								<td className='p-2 border-b border-gray-700'>{plan.year}</td>
-								<td className='p-2 border-b border-gray-700'>
-									{RATE[plan.rate as ERate]}
-								</td>
-								<td className='p-2 border-b border-gray-700'>
-									{plan.maxHours}
-								</td>
-								<td className='p-2 border-b border-gray-700'>
-									{plan.worked}
-								</td>
-								<td className='p-2 border-b border-gray-700'>
-									{plan.Object.name}
-								</td>
-								<td className='p-2 border-b border-gray-700'>
-									{plan.teacher.fio}
-								</td>
-								<td className='p-2 border-b border-gray-700'>
-									{plan.group.name}
-								</td>
-								<td className='p-2 border-b border-gray-700'>
-									<div className='flex gap-2'>
-										<Pencil
-											size={20}
-											onClick={() => handleModal('edit', plan)}
-											className='cursor-pointer text-secondary hover:text-secondary/80'
-										/>
-										<Trash
-											size={20}
-											onClick={() => handleModal('delete', plan)}
-											className='cursor-pointer text-red-500 hover:text-red-700'
-										/>
-									</div>
-								</td>
+				<div className='overflow-x-auto'>
+					<table className='w-full mt-4 border-collapse '>
+						<thead className='whitespace-nowrap'>
+							<tr>
+								<th className='text-left p-2 border-b border-gray-700'>
+									Учебный год
+								</th>
+								<th className='text-left p-2 border-b border-gray-700'>
+									Тариф
+								</th>
+								<th className='text-left p-2 border-b border-gray-700'>
+									Макс. кол-во часов
+								</th>
+								<th className='text-left p-2 border-b border-gray-700'>
+									Отработанные часы
+								</th>
+								<th className='text-left p-2 border-b border-gray-700'>
+									Предмет
+								</th>
+								<th className='text-left p-2 border-b border-gray-700'>
+									Преподаватель
+								</th>
+								<th className='text-left p-2 border-b border-gray-700'>
+									Группа
+								</th>
+								<th className='text-left p-2 border-b border-gray-700'>
+									Статус
+								</th>
+								<th className='text-left p-2 border-b border-gray-700'>
+									Действия
+								</th>
 							</tr>
-						))}
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							{data.map(plan => (
+								<tr key={plan.id}>
+									<td className='p-2 border-b border-gray-700'>{plan.year}</td>
+									<td className='p-2 border-b border-gray-700'>
+										{RATE[plan.rate as ERate]}
+									</td>
+									<td className='p-2 border-b border-gray-700'>
+										{plan.maxHours}
+									</td>
+									<td className='p-2 border-b border-gray-700'>
+										{plan.worked}
+									</td>
+									<td className='p-2 border-b border-gray-700'>
+										{plan.Object.name}
+									</td>
+									<td className='p-2 border-b border-gray-700'>
+										{plan.teacher.fio}
+									</td>
+									<td className='p-2 border-b border-gray-700'>
+										{plan.group.name}
+									</td>
+									<td className='p-2 border-b border-gray-700'>
+										{plan.status === EStatus.ACTIVE ? (
+											<div className='h-5 w-10 rounded-full bg-primary'></div>
+										) : (
+											<div className='h-5 w-10 rounded-full bg-red-500'></div>
+										)}
+									</td>
+									<td className='p-2 border-b border-gray-700'>
+										<div className='flex gap-2'>
+											<Pencil
+												size={20}
+												onClick={() => handleModal('edit', plan)}
+												className='cursor-pointer text-secondary hover:text-secondary/80'
+											/>
+											<Trash
+												size={20}
+												onClick={() => handleModal('delete', plan)}
+												className='cursor-pointer text-red-500 hover:text-red-700'
+											/>
+										</div>
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
 			) : (
 				<NotFoundData />
 			)}

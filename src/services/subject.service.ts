@@ -1,5 +1,12 @@
 import { ERate } from '@/types/plan.types'
-import { ISubject, ISubjectCreate, ISubjectUpdate } from '@/types/subject.types'
+import {
+	ISubject,
+	ISubjectCreate,
+	ISubjectTerm,
+	ISubjectTermCreate,
+	ISubjectTermUpdate,
+	ISubjectUpdate
+} from '@/types/subject.types'
 
 import { axiosWithAuth } from '@/api/interceptors'
 
@@ -23,16 +30,57 @@ class SubjectService {
 	}
 
 	async getByRate(rate: ERate) {
-		const res = await axiosWithAuth.get<ISubject[]>(
-			`${this.URL}/find_by_rate?rate=${rate}`
+		if (rate === ERate.HOURLY) {
+			const res = await axiosWithAuth.get<ISubject[]>(
+				`${this.URL}/find_by_rate?rate=${rate}`
+			)
+
+			return res.data
+		} else {
+			const res = await axiosWithAuth.get<ISubjectTerm[]>(
+				`${this.URL}/find_by_rate_term?rate=${rate}`
+			)
+
+			return res.data
+		}
+	}
+
+	async delete(id: string, rate: ERate) {
+		if (rate === ERate.HOURLY) {
+			const res = await axiosWithAuth.delete<boolean>(
+				`${this.URL}/delete?id=${id}`
+			)
+			return res.data
+		} else {
+			const res = await axiosWithAuth.delete<boolean>(
+				`${this.URL}/delete_term?id=${id}`
+			)
+			return res.data
+		}
+	}
+
+	async createTerm(data: ISubjectTermCreate) {
+		const dto: ISubjectTermCreate = { ...data, hours: Number(data.hours) }
+		const res = await axiosWithAuth.post<ISubjectTerm>(
+			`${this.URL}/create_term`,
+			dto
 		)
 
 		return res.data
 	}
 
-	async delete(id: string) {
+	async updateTerm(id: string, data: ISubjectTermUpdate) {
+		const res = await axiosWithAuth.patch<ISubjectTerm>(
+			`${this.URL}/update_term?id=${id}`,
+			data
+		)
+
+		return res.data
+	}
+
+	async deleteTerm(id: string) {
 		const res = await axiosWithAuth.delete<boolean>(
-			`${this.URL}/delete?id=${id}`
+			`${this.URL}/delete_term?id=${id}`
 		)
 
 		return res.data

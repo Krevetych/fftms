@@ -38,10 +38,10 @@ export function Login() {
 
 			if (errorMessage === 'Invalid password') {
 				toast.error('Неверный логин или пароль')
-			}
-
-			if (errorMessage === 'User not found') {
+			} else if (errorMessage === 'User not found') {
 				toast.error('Пользователь не найден')
+			} else {
+				toast.error('Неизвестная ошибка')
 			}
 		}
 	})

@@ -8,9 +8,15 @@ import { toast } from 'sonner'
 
 import NotFoundData from '@/components/NotFoundData'
 
-import { GROUP, TYPE } from '@/constants/table.constants'
+import { COURSE, GROUP, GROUP_STATUS, TYPE } from '@/constants/table.constants'
 
-import { EType, IGroupCreate, IGroupUpdate } from '@/types/group.types'
+import {
+	ECourse,
+	EStatus,
+	EType,
+	IGroupCreate,
+	IGroupUpdate
+} from '@/types/group.types'
 
 import { groupService } from '@/services/group.service'
 
@@ -70,6 +76,8 @@ export function Groups() {
 			setSelectedGroup(group)
 			setValue('name', group.name)
 			setValue('type', group.type)
+			setValue('course', group.course)
+			setValue('status', group.status)
 		} else if (type === 'delete' && group) {
 			setSelectedGroup(group)
 		} else {
@@ -128,7 +136,28 @@ export function Groups() {
 											placeholder='Группа'
 											className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
 										/>
-										<div className='flex gap-x-4'>
+										<div className='flex flex-col gap-y-2'>
+											<select
+												{...register('course', { required: true })}
+												className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
+											>
+												<option
+													value=''
+													disabled
+													selected
+												>
+													Выберите курс
+												</option>
+												{Object.entries(ECourse).map(([course, value]) => (
+													<option
+														key={course}
+														value={course}
+													>
+														{COURSE[value]}
+													</option>
+												))}
+											</select>
+
 											<select
 												{...register('type', { required: true })}
 												className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
@@ -146,6 +175,27 @@ export function Groups() {
 														value={type}
 													>
 														{TYPE[value]}
+													</option>
+												))}
+											</select>
+
+											<select
+												{...register('status', { required: true })}
+												className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
+											>
+												<option
+													value=''
+													disabled
+													selected
+												>
+													Выберите статус
+												</option>
+												{Object.entries(EStatus).map(([status, value]) => (
+													<option
+														key={status}
+														value={status}
+													>
+														{GROUP_STATUS[value]}
 													</option>
 												))}
 											</select>
@@ -207,7 +257,17 @@ export function Groups() {
 							<tr key={group.id}>
 								<td className='p-2 border-b border-gray-700'>{group.name}</td>
 								<td className='p-2 border-b border-gray-700'>
+									{COURSE[group.course as ECourse]}
+								</td>
+								<td className='p-2 border-b border-gray-700'>
 									{TYPE[group.type as EType]}
+								</td>
+								<td className='p-2 border-b border-gray-700'>
+									{group.status === EStatus.ACTIVE ? (
+										<div className='h-5 w-10 bg-primary rounded-full'></div>
+									) : (
+										<div className='h-5 w-10 bg-red-500 rounded-full'></div>
+									)}
 								</td>
 								<td className='p-2 border-b border-gray-700'>
 									<div className='flex gap-x-2'>

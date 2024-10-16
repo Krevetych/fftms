@@ -1,6 +1,12 @@
-import { IGroup } from './group.types'
+import { EStatus, IGroup } from './group.types'
 import { IObject } from './object.types'
-import { EMonth, EMonthHalf, ISubject } from './subject.types'
+import {
+	EMonth,
+	EMonthHalf,
+	ETerm,
+	ISubject,
+	ISubjectTerm
+} from './subject.types'
 import { ITeacher } from './teacher.types'
 
 export enum ERate {
@@ -14,6 +20,7 @@ export interface IPlan {
 	rate: ERate
 	maxHours: number
 	worked: number
+	status: EStatus
 	Object: IObject
 	teacher: ITeacher
 	group: IGroup
@@ -24,23 +31,29 @@ export interface IFilteredPlan {
 	year: string
 	rate: ERate
 	maxHours: number
+	worked: number
+	status: EStatus
 	Object: IObject
 	teacher: ITeacher
 	group: IGroup
 	Subject: ISubject[]
+	SubjectTerm: ISubjectTerm[]
 }
 
 export interface IFilters {
 	year: string
 	teacher: string
-	month: EMonth
-	monthHalf: EMonthHalf
+	rate: ERate
+	term?: ETerm
+	month?: EMonth
+	monthHalf?: EMonthHalf
 }
 
 export interface IPlanCreate {
 	year: string
 	rate: ERate
 	maxHours: number
+	status: EStatus
 	worked: number
 	objectId: string
 	teacherId: string
@@ -51,6 +64,7 @@ export interface IPlanUpdate {
 	year?: string
 	rate?: ERate
 	maxHours?: number
+	status?: EStatus
 	objectId?: string
 	teacherId?: string
 	groupId?: string

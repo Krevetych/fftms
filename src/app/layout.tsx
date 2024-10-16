@@ -19,7 +19,10 @@ export const metadata: Metadata = {
 		default: SITE_NAME,
 		template: `%s | ${SITE_NAME}`
 	},
-	description: 'Faculty Time Management System'
+	description: 'Faculty Time Management System',
+	icons: {
+		icon: '/icon-white.png'
+	}
 }
 
 export default function RootLayout({
@@ -34,12 +37,14 @@ export default function RootLayout({
 		>
 			<body className={zed.className}>
 				<Providers>
-						{children}
-						<Toaster
-							theme='dark'
-							position='bottom-right'
-							duration={1500}
-						/>
+					{children}
+					<Toaster
+						theme='dark'
+						position='bottom-right'
+						duration={2500}
+						expand={true}
+						richColors
+					/>
 				</Providers>
 			</body>
 		</html>

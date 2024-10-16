@@ -5,8 +5,8 @@ import { UseFormGetValues, UseFormRegister } from 'react-hook-form'
 import { TYPE } from '@/constants/table.constants'
 
 import { EType } from '@/types/group.types'
-import { IFilteredPlan } from '@/types/plan.types'
-import { EMonth, EMonthHalf, ISubject } from '@/types/subject.types'
+import { ERate, IFilteredPlan } from '@/types/plan.types'
+import { EMonth, EMonthHalf, ETerm, ISubject } from '@/types/subject.types'
 
 import { ISubjectForm } from '@/app/i/Dashboard'
 
@@ -17,9 +17,11 @@ interface PlanTableProps {
 	handleBlur: (subjectId: string, planId: string) => void
 	register: UseFormRegister<ISubjectForm>
 	getValues: UseFormGetValues<ISubjectForm>
+	rate: ERate
 	handleCreateSubject: (
 		subjectId: string,
 		planId: string,
+		term: ETerm,
 		month: EMonth,
 		monthHalf: EMonthHalf
 	) => Promise<void>
@@ -32,6 +34,7 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 			editingSubject,
 			handleHoursClick,
 			handleBlur,
+			rate,
 			register,
 			getValues,
 			handleCreateSubject
@@ -40,10 +43,16 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 	) => {
 		const totalHours: number = plans.reduce((total: number, plan) => {
 			const subjectHours =
-				plan?.Subject?.reduce(
-					(sum: number, subject: ISubject) => sum + subject.hours,
-					0
-				) || 0
+				rate === ERate.HOURLY
+					? plan?.Subject?.reduce(
+							(sum: number, subject) => sum + subject.hours,
+							0
+						) || 0
+					: plan?.SubjectTerm?.reduce(
+							(sum: number, subject) => sum + subject.hours,
+							0
+						) || 0
+
 			return total + subjectHours
 		}, 0)
 
@@ -81,11 +90,11 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 									{TYPE[plan.group.type as EType]}
 								</td>
 								<td className='p-2 border-b border-gray-700'>
-									{plan.maxHours}
+									{plan.maxHours - plan.worked}
 								</td>
 
 								{plan.Subject.length > 0 ? (
-									plan.Subject.map((subject: ISubject) => (
+									plan.Subject.map(subject => (
 										<td
 											key={subject.id}
 											className='p-2 border-b border-gray-700'
@@ -107,6 +116,46 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 																await handleCreateSubject(
 																	subject.id,
 																	plan.id,
+																	getValues('term') as ETerm,
+																	getValues('month') as EMonth,
+																	getValues('monthHalf') as EMonthHalf
+																)
+															}
+															className='cursor-pointer text-primary hover:text-primary/80'
+														/>
+													</>
+												) : (
+													<span onClick={() => handleHoursClick(subject.id)}>
+														{subject.hours}
+													</span>
+												)}
+											</div>
+										</td>
+									))
+								) : plan.SubjectTerm.length > 0 ? (
+									plan.SubjectTerm.map(subject => (
+										<td
+											key={subject.id}
+											className='p-2 border-b border-gray-700'
+										>
+											<div className='flex items-center gap-x-3'>
+												{editingSubject === subject.id ? (
+													<>
+														<input
+															type='text'
+															{...register(`subjects.${subject.id}.hours`, {
+																required: true
+															})}
+															className='p-3 w-1/2 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal outline-none border-none'
+															defaultValue={subject.hours}
+															onBlur={() => handleBlur(subject.id, plan.id)}
+														/>
+														<Check
+															onClick={async () =>
+																await handleCreateSubject(
+																	subject.id,
+																	plan.id,
+																	getValues('term') as ETerm,
 																	getValues('month') as EMonth,
 																	getValues('monthHalf') as EMonthHalf
 																)
@@ -136,6 +185,7 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 													await handleCreateSubject(
 														'new',
 														plan.id,
+														getValues('term') as ETerm,
 														getValues('month') as EMonth,
 														getValues('monthHalf') as EMonthHalf
 													)
@@ -150,7 +200,7 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 					</tbody>
 				</table>
 				<div className='absolute bottom-0 left-0 right-0 bg-card shadow-lg p-4'>
-					<div className='flex font-semibold text-lg gap-x-4 justify-end'>
+					<div className='flex font-semibold text-lg gap-x-4 justify-start'>
 						<span>Итоговые часы:</span>
 						<span>{totalHours}</span>
 					</div>

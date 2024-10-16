@@ -23,9 +23,13 @@ class PlanService {
 	}
 
 	async update(id: string, data: IPlanUpdate) {
+		const dto: IPlanUpdate = {
+			...data,
+			maxHours: Number(data.maxHours)
+		}
 		const res = await axiosWithAuth.patch<IPlan>(
 			`${this.URL}/update?id=${id}`,
-			data
+			dto
 		)
 
 		return res.data
@@ -33,7 +37,7 @@ class PlanService {
 
 	async getFiltered(data: IFilters | undefined) {
 		const res = await axiosWithAuth.get<IFilteredPlan[]>(
-			`${this.URL}/find_by_filters?year=${data?.year}&teacher=${data?.teacher}&month=${data?.month}&monthHalf=${data?.monthHalf}`
+			`${this.URL}/find_by_filters?year=${data?.year}&teacher=${data?.teacher}&month=${data?.month}&monthHalf=${data?.monthHalf}&term=${data?.term}&rate=${data?.rate}`
 		)
 
 		return res.data
