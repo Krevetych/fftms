@@ -1,4 +1,9 @@
-import { IGroup, IGroupCreate, IGroupUpdate } from '@/types/group.types'
+import {
+	IFilteredGroup,
+	IGroup,
+	IGroupCreate,
+	IGroupUpdate
+} from '@/types/group.types'
 
 import { axiosWithAuth } from '@/api/interceptors'
 
@@ -23,6 +28,14 @@ class GroupService {
 
 	async getAll() {
 		const res = await axiosWithAuth.get<IGroup[]>(`${this.URL}/find_all`)
+
+		return res.data
+	}
+
+	async getFiltered(data: IFilteredGroup | undefined) {
+		const res = await axiosWithAuth.get<IGroup[]>(
+			`${this.URL}/find_by_filters?type=${data?.type}&course=${data?.course}&status=${data?.status}`
+		)
 
 		return res.data
 	}

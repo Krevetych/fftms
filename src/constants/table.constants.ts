@@ -50,6 +50,26 @@ export const SUBJECT = [
 	{
 		id: 4,
 		title: 'План'
+	},
+	{
+		id: 5,
+		title: 'Предмет'
+	},
+	{
+		id: 6,
+		title: 'Преподаватель'
+	},
+	{
+		id: 7,
+		title: 'Группа'
+	},
+	{
+		id: 8,
+		title: 'Вид группы'
+	},
+	{
+		id: 9,
+		title: 'Год'
 	}
 ]
 
@@ -65,6 +85,26 @@ export const SUBJECT_RATE = [
 	{
 		id: 4,
 		title: 'План'
+	},
+	{
+		id: 5,
+		title: 'Предмет'
+	},
+	{
+		id: 6,
+		title: 'Преподаватель'
+	},
+	{
+		id: 7,
+		title: 'Группа'
+	},
+	{
+		id: 8,
+		title: 'Вид группы'
+	},
+	{
+		id: 9,
+		title: 'Год'
 	}
 ]
 

@@ -4,4 +4,5 @@ export interface IMenuItem {
 	link: string
 	name: string
 	icon: LucideIcon
+	access: string[]
 }

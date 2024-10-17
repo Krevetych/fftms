@@ -16,36 +16,43 @@ export const MENU: IMenuItem[] = [
 	{
 		icon: LayoutDashboard,
 		name: 'Главная',
-		link: PAGES.HOME
+		link: PAGES.HOME,
+		access: ['admin']
 	},
 	{
 		icon: NotebookText,
 		name: 'Учебные планы',
-		link: PAGES.PLANS
+		link: PAGES.PLANS,
+		access: ['admin']
 	},
 	{
 		icon: Hourglass,
 		name: 'Вычитанные часы (Час)',
-		link: PAGES.SUBJECTS_H
+		link: PAGES.SUBJECTS_H,
+		access: ['admin', 'user']
 	},
 	{
 		icon: Captions,
 		name: 'Вычитанные часы (Тариф)',
-		link: PAGES.SUBJECTS_T
+		link: PAGES.SUBJECTS_T,
+		access: ['admin', 'user']
 	},
 	{
 		icon: BookUser,
 		name: 'Группы',
-		link: PAGES.GROUPS
+		link: PAGES.GROUPS,
+		access: ['admin']
 	},
 	{
 		icon: LibraryBig,
 		name: 'Предметы',
-		link: PAGES.OBJECTS
+		link: PAGES.OBJECTS,
+		access: ['admin']
 	},
 	{
 		icon: School,
 		name: 'Преподаватели',
-		link: PAGES.TEACHERS
+		link: PAGES.TEACHERS,
+		access: ['admin']
 	}
 ]

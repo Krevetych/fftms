@@ -1,10 +1,8 @@
 import { Metadata } from 'next'
 
-import { Heading } from '@/components/Heading'
-
 import { NO_INDEX_PAGE } from '@/constants/seo.constants'
 
-import { Object } from './Object'
+import { ObjectComponent } from './ObjectComponent'
 
 export const metadata: Metadata = {
 	title: 'Предметы',
@@ -14,8 +12,7 @@ export const metadata: Metadata = {
 export default function ObjectsPage() {
 	return (
 		<>
-			<Heading title='Предметы' />
-			<Object />
+			<ObjectComponent />
 		</>
 	)
 }

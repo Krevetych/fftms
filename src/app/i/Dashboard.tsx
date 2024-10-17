@@ -22,6 +22,7 @@ import {
 	ISubjectTermCreate
 } from '@/types/subject.types'
 
+
 import { planService } from '@/services/plan.service'
 import { subjectService } from '@/services/subject.service'
 import { teacherService } from '@/services/teacher.service'
@@ -224,7 +225,7 @@ export function Dashboard() {
 			<div className='w-1/3 flex items-center justify-center'>
 				<form
 					onSubmit={handleSubmit(onSubmit)}
-					className='flex border border-primary rounded-2xl border-solid p-10 flex-col justify-center items-center w-fit'
+					className='flex bg-card border border-primary rounded-2xl border-solid p-10 flex-col justify-center items-center w-fit'
 				>
 					<div>
 						<SelectInput

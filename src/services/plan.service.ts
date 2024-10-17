@@ -3,7 +3,8 @@ import {
 	IFilters,
 	IPlan,
 	IPlanCreate,
-	IPlanUpdate
+	IPlanUpdate,
+	IPlans
 } from '@/types/plan.types'
 
 import { axiosWithAuth } from '@/api/interceptors'
@@ -38,6 +39,14 @@ class PlanService {
 	async getFiltered(data: IFilters | undefined) {
 		const res = await axiosWithAuth.get<IFilteredPlan[]>(
 			`${this.URL}/find_by_filters?year=${data?.year}&teacher=${data?.teacher}&month=${data?.month}&monthHalf=${data?.monthHalf}&term=${data?.term}&rate=${data?.rate}`
+		)
+
+		return res.data
+	}
+
+	async getPlaned(data: IPlans | undefined) {
+		const res = await axiosWithAuth.get<IFilteredPlan[]>(
+			`${this.URL}/find_by_plan?year=${data?.year}&rate=${data?.rate}&status=${data?.status}&objectId=${data?.objectId}&teacherId=${data?.teacherId}&groupId=${data?.groupId}`
 		)
 
 		return res.data

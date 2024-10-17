@@ -1,10 +1,8 @@
 import { Metadata } from 'next'
 
-import { Heading } from '@/components/Heading'
-
 import { NO_INDEX_PAGE } from '@/constants/seo.constants'
 
-import { Teachers } from './Teacher'
+import { TeacherComponent } from './TeacherComponent'
 
 export const metadata: Metadata = {
 	title: 'Преподаватели',
@@ -14,8 +12,7 @@ export const metadata: Metadata = {
 export default function TeachersPage() {
 	return (
 		<>
-			<Heading title='Преподаватели' />
-			<Teachers />
+			<TeacherComponent />
 		</>
 	)
 }

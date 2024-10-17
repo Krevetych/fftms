@@ -1,3 +1,6 @@
+import { type } from 'os'
+
+import { EType } from './group.types'
 import { IPlan } from './plan.types'
 
 export enum EMonth {
@@ -38,6 +41,14 @@ export interface ISubjectCreate {
 	planId: string
 }
 
+export interface IFilteredSubject {
+	month?: EMonth
+	monthHalf?: EMonthHalf
+	teacherId?: string
+	type?: EType
+	groupId?: string
+}
+
 export interface ISubjectUpdate {
 	month?: EMonth
 	monthHalf?: EMonthHalf
@@ -56,6 +67,13 @@ export interface ISubjectTermCreate {
 	term: ETerm
 	hours: number
 	planId: string
+}
+
+export interface IFilteredSubjectTerm {
+	term?: ETerm
+	teacherId?: string
+	type?: EType
+	groupId?: string
 }
 
 export interface ISubjectTermUpdate {

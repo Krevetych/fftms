@@ -1,5 +1,7 @@
 import { ERate } from '@/types/plan.types'
 import {
+	IFilteredSubject,
+	IFilteredSubjectTerm,
 	ISubject,
 	ISubjectCreate,
 	ISubjectTerm,
@@ -43,6 +45,22 @@ class SubjectService {
 
 			return res.data
 		}
+	}
+
+	async getFiltered(data: IFilteredSubject | undefined) {
+		const res = await axiosWithAuth.get<ISubject[]>(
+			`${this.URL}/find_by_filters?month=${data?.month}&monthHalf=${data?.monthHalf}&type=${data?.type}&teacherId=${data?.teacherId}&groupId=${data?.groupId}`
+		)
+
+		return res.data
+	}
+
+	async getFilteredTerm(data: IFilteredSubjectTerm | undefined) {
+		const res = await axiosWithAuth.get<ISubjectTerm[]>(
+			`${this.URL}/find_by_filters_term?term=${data?.term}&type=${data?.type}&teacherId=${data?.teacherId}&groupId=${data?.groupId}`
+		)
+
+		return res.data
 	}
 
 	async delete(id: string, rate: ERate) {

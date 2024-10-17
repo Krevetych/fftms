@@ -49,6 +49,15 @@ export interface IFilters {
 	monthHalf?: EMonthHalf
 }
 
+export interface IPlans {
+	year?: string
+	rate?: ERate
+	objectId?: string
+	status?: EStatus
+	teacherId?: string
+	groupId?: string
+}
+
 export interface IPlanCreate {
 	year: string
 	rate: ERate

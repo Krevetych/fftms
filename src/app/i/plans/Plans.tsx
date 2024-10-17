@@ -8,29 +8,65 @@ import { toast } from 'sonner'
 
 import Loader from '@/components/Loader'
 import NotFoundData from '@/components/NotFoundData'
+import SelectInput from '@/components/SelectInput'
 
-import { GROUP_STATUS, PLAN_STATUS, RATE } from '@/constants/table.constants'
+import { PLAN_STATUS, RATE } from '@/constants/table.constants'
 
 import { EStatus } from '@/types/group.types'
-import { ERate, IPlanCreate, IPlanUpdate } from '@/types/plan.types'
+import {
+	ERate,
+	IPlan,
+	IPlanCreate,
+	IPlanUpdate,
+	IPlans
+} from '@/types/plan.types'
 
 import { groupService } from '@/services/group.service'
 import { objectService } from '@/services/object.service'
 import { planService } from '@/services/plan.service'
 import { teacherService } from '@/services/teacher.service'
 
+interface ISubjectForm {
+	year: string
+	rate: ERate
+	objectId: string
+	status: EStatus
+	teacherId: string
+	groupId: string
+}
+
 export function Plans() {
-	const { register, handleSubmit, reset, setValue } = useForm<IPlanCreate>({
+	const {
+		register: createRegister,
+		handleSubmit: createHandleSubmit,
+		reset: createReset,
+		setValue: createSetValue
+	} = useForm<IPlanCreate>({
+		mode: 'onChange'
+	})
+
+	const {
+		register: filterRegister,
+		handleSubmit: filterHandleSubmit,
+		reset: filterReset
+	} = useForm<ISubjectForm>({
 		mode: 'onChange'
 	})
 
 	const [modal, setModal] = useState(false)
+	const [filters, setFilters] = useState<IPlans>()
 	const [selectedPlan, setSelectedPlan] = useState<any | null>(null)
 	const [actionType, setActionType] = useState<
 		'create' | 'edit' | 'delete' | null
 	>(null)
 
 	const queryClient = useQueryClient()
+
+	const { data: fPlansData, isLoading: isLoadingFPlans } = useQuery({
+		queryKey: ['filtered-plans', filters],
+		queryFn: () => (filters ? planService.getPlaned(filters) : []),
+		enabled: !!filters
+	})
 
 	const { mutate: createOrEditPlan } = useMutation({
 		mutationKey: ['plans-create-edit'],
@@ -42,7 +78,7 @@ export function Plans() {
 		},
 		onSuccess: () => {
 			toast.success(`Запись ${actionType === 'edit' ? 'обновлена' : 'создана'}`)
-			reset()
+			createReset()
 			setSelectedPlan(null)
 			setActionType(null)
 			queryClient.invalidateQueries({ queryKey: ['plans'] })
@@ -59,7 +95,7 @@ export function Plans() {
 		}
 	})
 
-	const onSubmit: SubmitHandler<IPlanCreate> = data => {
+	const onSubmitCreate: SubmitHandler<IPlanCreate> = data => {
 		createOrEditPlan(data)
 	}
 
@@ -69,17 +105,17 @@ export function Plans() {
 	) => {
 		if (type === 'edit' && plan) {
 			setSelectedPlan(plan)
-			setValue('year', plan.year)
-			setValue('rate', plan.rate)
-			setValue('maxHours', plan.maxHours)
-			setValue('status', plan.status)
-			setValue('objectId', plan.objectId)
-			setValue('teacherId', plan.teacherId)
-			setValue('groupId', plan.groupId)
+			createSetValue('year', plan.year)
+			createSetValue('rate', plan.rate)
+			createSetValue('maxHours', plan.maxHours)
+			createSetValue('status', plan.status)
+			createSetValue('objectId', plan.objectId)
+			createSetValue('teacherId', plan.teacherId)
+			createSetValue('groupId', plan.groupId)
 		} else if (type === 'delete' && plan) {
 			setSelectedPlan(plan)
 		} else {
-			reset()
+			createReset()
 			setSelectedPlan(null)
 		}
 		setActionType(type)
@@ -106,293 +142,410 @@ export function Plans() {
 		queryFn: () => groupService.getAll()
 	})
 
+	const { data: plansData, isLoading: isLoadingPlans } = useQuery({
+		queryKey: ['plans'],
+		queryFn: () => planService.getAll(),
+		staleTime: 1000 * 60 * 5
+	})
+
 	const year = () => {
 		const year = new Date().getFullYear()
 		return `${year}-${year + 1}`
 	}
 
+	const onSubmit: SubmitHandler<ISubjectForm> = data => {
+		setFilters({
+			year: data.year || '',
+			rate: data.rate || '',
+			status: data.status || '',
+			objectId: data.objectId || '',
+			teacherId: data.teacherId || '',
+			groupId: data.groupId || ''
+		})
+	}
+
+	const resetFilters = () => {
+		filterReset()
+	}
+
+	const uniqueYears = Array.from(
+		new Set(plansData?.map((plan: IPlan) => plan.year))
+	)
+
+	const mapData =
+		fPlansData && fPlansData?.length > 0 && filters
+			? fPlansData
+			: fPlansData?.length === 0 && filters
+				? []
+				: data
+
 	return (
-		<>
-			<div className='flex items-center gap-2'>
-				<div
-					className='flex items-center gap-2 p-3 bg-primary w-fit rounded-lg transition-colors cursor-pointer hover:bg-primary/80'
-					onClick={() => handleModal('create')}
-				>
-					<Plus />
-					<p>Создать</p>
-				</div>
-			</div>
-
-			{modal && (
-				<div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'>
-					<div className='bg-bg p-4 rounded-lg shadow-lg'>
-						<form
-							onSubmit={handleSubmit(onSubmit)}
-							className='flex flex-col gap-4'
-						>
-							<div className='flex items-center gap-x-4'>
-								<h1 className='text-2xl font-black'>
-									{actionType === 'edit'
-										? 'Редактирование учебного плана'
-										: actionType === 'delete'
-											? 'Удаление учебного плана'
-											: 'Создание учебного плана'}
-								</h1>
-								<X
-									size={24}
-									onClick={() => setModal(false)}
-									className='rounded-full transition-colors cursor-pointer hover:bg-primary'
-								/>
-							</div>
-
-							{actionType !== 'delete' ? (
-								<>
-									<div className='flex flex-col gap-2'>
-										<input
-											{...register('year', { required: true })}
-											type='text'
-											placeholder='Учебный год'
-											value={year()}
-											className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
-										/>
-										<select
-											{...register('rate', { required: true })}
-											className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
-										>
-											<option
-												value=''
-												disabled
-												selected
-											>
-												Выберите тариф
-											</option>
-											{Object.entries(ERate).map(([rate, value]) => (
-												<option
-													key={rate}
-													value={rate}
-												>
-													{RATE[value]}
-												</option>
-											))}
-										</select>
-										<input
-											{...register('maxHours', { required: true })}
-											type='text'
-											placeholder='Макс. кол-во часов'
-											className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
-										/>
-										<select
-											{...register('objectId', { required: true })}
-											className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
-										>
-											<option
-												value=''
-												disabled
-												selected
-											>
-												Выберите предмет
-											</option>
-											{isLoadingObjects ? (
-												<Loader />
-											) : (
-												objectsData?.map(object => (
-													<option
-														key={object.id}
-														value={object.id}
-													>
-														{object.name}
-													</option>
-												))
-											)}
-										</select>
-										<select
-											{...register('teacherId', { required: true })}
-											className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
-										>
-											<option
-												value=''
-												disabled
-												selected
-											>
-												Выберите преподавателя
-											</option>
-											{isLoadingTeachers ? (
-												<Loader />
-											) : (
-												teachersData?.map(teacher => (
-													<option
-														key={teacher.id}
-														value={teacher.id}
-													>
-														{teacher.fio}
-													</option>
-												))
-											)}
-										</select>
-										<select
-											{...register('groupId', { required: true })}
-											className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
-										>
-											<option
-												value=''
-												disabled
-												selected
-											>
-												Выберите группу
-											</option>
-											{isLoadingGroups ? (
-												<Loader />
-											) : (
-												groupData?.map(group => (
-													<option
-														key={group.id}
-														value={group.id}
-													>
-														{group.name}
-													</option>
-												))
-											)}
-										</select>
-										<select
-											{...register('status', { required: true })}
-											className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
-										>
-											<option
-												value=''
-												disabled
-												selected
-											>
-												Выберите статус
-											</option>
-											{Object.entries(EStatus).map(([status, value]) => (
-												<option
-													key={status}
-													value={status}
-												>
-													{PLAN_STATUS[value]}
-												</option>
-											))}
-										</select>
-									</div>
-									<button
-										type='submit'
-										className='w-fit p-2 transition-colors bg-primary rounded-lg hover:bg-primary/80'
-									>
-										{actionType === 'edit' ? 'Сохранить изменения' : 'Создать'}
-									</button>
-								</>
-							) : (
-								<div className='flex flex-col gap-2'>
-									<p>
-										Вы уверены, что хотите удалить план{' '}
-										<strong>{selectedPlan?.year}</strong>?
-									</p>
-									<button
-										type='button'
-										className='w-fit p-2 transition-colors bg-red-500 rounded-lg hover:bg-red-400'
-										onClick={() => {
-											if (selectedPlan) {
-												deletePlan(selectedPlan.id)
-												setModal(false)
-											}
-										}}
-									>
-										Удалить
-									</button>
-								</div>
-							)}
-						</form>
+		<div className='flex justify-between'>
+			<div className='w-2/3'>
+				<div className='flex items-center gap-2'>
+					<div
+						className='flex items-center gap-2 p-3 bg-primary w-fit rounded-lg transition-colors cursor-pointer hover:bg-primary/80'
+						onClick={() => handleModal('create')}
+					>
+						<Plus />
+						<p>Создать</p>
 					</div>
 				</div>
-			)}
 
-			{isLoading ? (
-				<Loader />
-			) : data?.length !== 0 && data ? (
-				<div className='overflow-x-auto'>
-					<table className='w-full mt-4 border-collapse '>
-						<thead className='whitespace-nowrap'>
-							<tr>
-								<th className='text-left p-2 border-b border-gray-700'>
-									Учебный год
-								</th>
-								<th className='text-left p-2 border-b border-gray-700'>
-									Тариф
-								</th>
-								<th className='text-left p-2 border-b border-gray-700'>
-									Макс. кол-во часов
-								</th>
-								<th className='text-left p-2 border-b border-gray-700'>
-									Отработанные часы
-								</th>
-								<th className='text-left p-2 border-b border-gray-700'>
-									Предмет
-								</th>
-								<th className='text-left p-2 border-b border-gray-700'>
-									Преподаватель
-								</th>
-								<th className='text-left p-2 border-b border-gray-700'>
-									Группа
-								</th>
-								<th className='text-left p-2 border-b border-gray-700'>
-									Статус
-								</th>
-								<th className='text-left p-2 border-b border-gray-700'>
-									Действия
-								</th>
-							</tr>
-						</thead>
-						<tbody>
-							{data.map(plan => (
-								<tr key={plan.id}>
-									<td className='p-2 border-b border-gray-700'>{plan.year}</td>
-									<td className='p-2 border-b border-gray-700'>
-										{RATE[plan.rate as ERate]}
-									</td>
-									<td className='p-2 border-b border-gray-700'>
-										{plan.maxHours}
-									</td>
-									<td className='p-2 border-b border-gray-700'>
-										{plan.worked}
-									</td>
-									<td className='p-2 border-b border-gray-700'>
-										{plan.Object.name}
-									</td>
-									<td className='p-2 border-b border-gray-700'>
-										{plan.teacher.fio}
-									</td>
-									<td className='p-2 border-b border-gray-700'>
-										{plan.group.name}
-									</td>
-									<td className='p-2 border-b border-gray-700'>
-										{plan.status === EStatus.ACTIVE ? (
-											<div className='h-5 w-10 rounded-full bg-primary'></div>
-										) : (
-											<div className='h-5 w-10 rounded-full bg-red-500'></div>
-										)}
-									</td>
-									<td className='p-2 border-b border-gray-700'>
-										<div className='flex gap-2'>
-											<Pencil
-												size={20}
-												onClick={() => handleModal('edit', plan)}
-												className='cursor-pointer text-secondary hover:text-secondary/80'
+				{modal && (
+					<div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'>
+						<div className='bg-bg p-4 rounded-lg shadow-lg'>
+							<form
+								onSubmit={createHandleSubmit(onSubmitCreate)}
+								className='flex flex-col gap-4'
+							>
+								<div className='flex items-center gap-x-4'>
+									<h1 className='text-2xl font-black'>
+										{actionType === 'edit'
+											? 'Редактирование учебного плана'
+											: actionType === 'delete'
+												? 'Удаление учебного плана'
+												: 'Создание учебного плана'}
+									</h1>
+									<X
+										size={24}
+										onClick={() => setModal(false)}
+										className='rounded-full transition-colors cursor-pointer hover:bg-primary'
+									/>
+								</div>
+
+								{actionType !== 'delete' ? (
+									<>
+										<div className='flex flex-col gap-2'>
+											<input
+												{...createRegister('year', { required: true })}
+												type='text'
+												placeholder='Учебный год'
+												value={year()}
+												className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
 											/>
-											<Trash
-												size={20}
-												onClick={() => handleModal('delete', plan)}
-												className='cursor-pointer text-red-500 hover:text-red-700'
+											<select
+												{...createRegister('rate', { required: true })}
+												className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
+											>
+												<option
+													value=''
+													disabled
+													selected
+												>
+													Выберите тариф
+												</option>
+												{Object.entries(ERate).map(([rate, value]) => (
+													<option
+														key={rate}
+														value={rate}
+													>
+														{RATE[value]}
+													</option>
+												))}
+											</select>
+											<input
+												{...createRegister('maxHours', { required: true })}
+												type='text'
+												placeholder='Макс. кол-во часов'
+												className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
 											/>
+											<select
+												{...createRegister('objectId', { required: true })}
+												className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
+											>
+												<option
+													value=''
+													disabled
+													selected
+												>
+													Выберите предмет
+												</option>
+												{isLoadingObjects ? (
+													<Loader />
+												) : (
+													objectsData?.map(object => (
+														<option
+															key={object.id}
+															value={object.id}
+														>
+															{object.name}
+														</option>
+													))
+												)}
+											</select>
+											<select
+												{...createRegister('teacherId', { required: true })}
+												className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
+											>
+												<option
+													value=''
+													disabled
+													selected
+												>
+													Выберите преподавателя
+												</option>
+												{isLoadingTeachers ? (
+													<Loader />
+												) : (
+													teachersData?.map(teacher => (
+														<option
+															key={teacher.id}
+															value={teacher.id}
+														>
+															{teacher.fio}
+														</option>
+													))
+												)}
+											</select>
+											<select
+												{...createRegister('groupId', { required: true })}
+												className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
+											>
+												<option
+													value=''
+													disabled
+													selected
+												>
+													Выберите группу
+												</option>
+												{isLoadingGroups ? (
+													<Loader />
+												) : (
+													groupData?.map(group => (
+														<option
+															key={group.id}
+															value={group.id}
+														>
+															{group.name}
+														</option>
+													))
+												)}
+											</select>
+											<select
+												{...createRegister('status', { required: true })}
+												className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
+											>
+												<option
+													value=''
+													disabled
+													selected
+												>
+													Выберите статус
+												</option>
+												{Object.entries(EStatus).map(([status, value]) => (
+													<option
+														key={status}
+														value={status}
+													>
+														{PLAN_STATUS[value]}
+													</option>
+												))}
+											</select>
 										</div>
-									</td>
+										<button
+											type='submit'
+											className='w-fit p-2 transition-colors bg-primary rounded-lg hover:bg-primary/80'
+										>
+											{actionType === 'edit'
+												? 'Сохранить изменения'
+												: 'Создать'}
+										</button>
+									</>
+								) : (
+									<div className='flex flex-col gap-2'>
+										<p>
+											Вы уверены, что хотите удалить план{' '}
+											<strong>{selectedPlan?.year}</strong>?
+										</p>
+										<button
+											type='button'
+											className='w-fit p-2 transition-colors bg-red-500 rounded-lg hover:bg-red-400'
+											onClick={() => {
+												if (selectedPlan) {
+													deletePlan(selectedPlan.id)
+													setModal(false)
+												}
+											}}
+										>
+											Удалить
+										</button>
+									</div>
+								)}
+							</form>
+						</div>
+					</div>
+				)}
+
+				{isLoading ? (
+					<Loader />
+				) : mapData?.length !== 0 && mapData ? (
+					<div className='overflow-x-auto'>
+						<table className='w-full mt-4 border-collapse '>
+							<thead className='whitespace-nowrap'>
+								<tr>
+									<th className='text-left p-2 border-b border-gray-700'>
+										Учебный год
+									</th>
+									<th className='text-left p-2 border-b border-gray-700'>
+										Тариф
+									</th>
+									<th className='text-left p-2 border-b border-gray-700'>
+										Макс. кол-во часов
+									</th>
+									<th className='text-left p-2 border-b border-gray-700'>
+										Отработанные часы
+									</th>
+									<th className='text-left p-2 border-b border-gray-700'>
+										Предмет
+									</th>
+									<th className='text-left p-2 border-b border-gray-700'>
+										Преподаватель
+									</th>
+									<th className='text-left p-2 border-b border-gray-700'>
+										Группа
+									</th>
+									<th className='text-left p-2 border-b border-gray-700'>
+										Статус
+									</th>
+									<th className='text-left p-2 border-b border-gray-700'>
+										Действия
+									</th>
 								</tr>
-							))}
-						</tbody>
-					</table>
-				</div>
-			) : (
-				<NotFoundData />
-			)}
-		</>
+							</thead>
+							<tbody>
+								{mapData.map(plan => (
+									<tr key={plan.id}>
+										<td className='p-2 border-b border-gray-700'>
+											{plan.year}
+										</td>
+										<td className='p-2 border-b border-gray-700'>
+											{RATE[plan.rate as ERate]}
+										</td>
+										<td className='p-2 border-b border-gray-700'>
+											{plan.maxHours}
+										</td>
+										<td className='p-2 border-b border-gray-700'>
+											{plan.worked}
+										</td>
+										<td className='p-2 border-b border-gray-700'>
+											{plan.Object.name}
+										</td>
+										<td className='p-2 border-b border-gray-700'>
+											{plan.teacher.fio}
+										</td>
+										<td className='p-2 border-b border-gray-700'>
+											{plan.group.name}
+										</td>
+										<td className='p-2 border-b border-gray-700'>
+											{plan.status === EStatus.ACTIVE ? (
+												<div className='h-5 w-10 rounded-full bg-primary'></div>
+											) : (
+												<div className='h-5 w-10 rounded-full bg-red-500'></div>
+											)}
+										</td>
+										<td className='p-2 border-b border-gray-700'>
+											<div className='flex gap-2'>
+												<Pencil
+													size={20}
+													onClick={() => handleModal('edit', plan)}
+													className='cursor-pointer text-secondary hover:text-secondary/80'
+												/>
+												<Trash
+													size={20}
+													onClick={() => handleModal('delete', plan)}
+													className='cursor-pointer text-red-500 hover:text-red-700'
+												/>
+											</div>
+										</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
+				) : (
+					<NotFoundData />
+				)}
+			</div>
+			<div className='w-1/3 flex items-center justify-center'>
+				<form
+					onSubmit={filterHandleSubmit(onSubmit)}
+					className='flex border bg-card border-primary rounded-2xl border-solid p-10 flex-col justify-center items-center w-fit'
+				>
+					<div>
+						<SelectInput
+							label='Год'
+							options={uniqueYears.map(year => ({ value: year, label: year }))}
+							{...filterRegister('year')}
+						/>
+						<SelectInput
+							label='Преподаватель'
+							options={
+								teachersData?.map(teacher => ({
+									value: teacher.id,
+									label: teacher.fio
+								})) || []
+							}
+							loading={isLoadingTeachers}
+							{...filterRegister('teacherId')}
+						/>
+						<SelectInput
+							label='Тариф'
+							options={Object.entries(RATE).map(([rate, value]) => ({
+								value: rate as ERate,
+								label: value
+							}))}
+							{...filterRegister('rate')}
+						/>
+						<SelectInput
+							label='Статус'
+							options={Object.entries(PLAN_STATUS).map(([status, value]) => ({
+								value: status as EStatus,
+								label: value
+							}))}
+							{...filterRegister('status')}
+						/>
+
+						<SelectInput
+							label='Группа'
+							options={
+								groupData?.map(group => ({
+									value: group.id,
+									label: group.name
+								})) || []
+							}
+							loading={isLoadingGroups}
+							{...filterRegister('groupId')}
+						/>
+						<SelectInput
+							label='Предмет'
+							options={
+								objectsData?.map(obj => ({
+									value: obj.id,
+									label: obj.name
+								})) || []
+							}
+							loading={isLoadingObjects}
+							{...filterRegister('objectId')}
+						/>
+						<div className='flex gap-x-2'>
+							<button
+								type='submit'
+								className='w-full p-2 transition-colors bg-primary rounded-lg hover:bg-primary/80'
+							>
+								Применить
+							</button>
+							<button
+								type='button'
+								onClick={resetFilters}
+								className='w-full p-2 transition-colors bg-secondary rounded-lg hover:bg-secondary/80'
+							>
+								Сбросить
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
 	)
 }

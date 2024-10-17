@@ -1,10 +1,8 @@
 import { Metadata } from 'next'
 
-import { Heading } from '@/components/Heading'
-
 import { NO_INDEX_PAGE } from '@/constants/seo.constants'
 
-import { Groups } from './Groups'
+import { GroupComponent } from './GroupComponent'
 
 export const metadata: Metadata = {
 	title: 'Groups',
@@ -14,8 +12,7 @@ export const metadata: Metadata = {
 export default function GroupsPage() {
 	return (
 		<>
-			<Heading title='Группы' />
-			<Groups />
+			<GroupComponent />
 		</>
 	)
 }

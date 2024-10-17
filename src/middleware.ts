@@ -1,4 +1,3 @@
-import next from 'next'
 import { NextRequest, NextResponse } from 'next/server'
 
 import { PAGES } from './config/url.config'

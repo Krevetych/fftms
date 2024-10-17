@@ -32,6 +32,12 @@ export interface IGroupCreate {
 	status: EStatus
 }
 
+export interface IFilteredGroup {
+	type?: EType
+	course?: ECourse
+	status?: EStatus
+}
+
 export interface IGroupUpdate {
 	name?: string
 	type?: EType
