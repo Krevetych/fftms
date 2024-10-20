@@ -11,6 +11,12 @@ class ObjectService {
 		return res.data
 	}
 
+	async upload(data: FormData) {
+		const res = await axiosWithAuth.post<IObject>(`${this.URL}/upload`, data)
+
+		return res.data
+	}
+
 	async update(id: string, data: IObjectUpdate) {
 		const res = await axiosWithAuth.patch<IObject>(
 			`${this.URL}/update?id=${id}`,

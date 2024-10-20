@@ -1,11 +1,16 @@
+import { createElement } from 'react'
+
 import {
+	ERate,
 	IFilteredPlan,
 	IFilters,
 	IPlan,
 	IPlanCreate,
 	IPlanUpdate,
-	IPlans
+	IPlans,
+	IUnloadPlans
 } from '@/types/plan.types'
+import { EMonth, EMonthHalf, ETerm } from '@/types/subject.types'
 
 import { axiosWithAuth } from '@/api/interceptors'
 
@@ -19,6 +24,33 @@ class PlanService {
 			worked: 0
 		}
 		const res = await axiosWithAuth.post<IPlan>(`${this.URL}/create`, dto)
+
+		return res.data
+	}
+
+	async upload(data: FormData) {
+		const res = await axiosWithAuth.post<IPlan>(`${this.URL}/upload`, data)
+
+		return res.data
+	}
+
+	async unload(dto: IUnloadPlans | undefined) {
+		const res = await axiosWithAuth.get(
+			`${this.URL}/unload?rate=${dto?.rate}&term=${dto?.term}&month=${dto?.month}&monthHalf=${dto?.monthHalf}`,
+			{ responseType: 'blob' }
+		)
+
+		const blob = new Blob([res.data])
+
+		const url = window.URL.createObjectURL(blob)
+
+		const a = document.createElement('a')
+		a.href = url
+		a.download = 'plans.xlsx'
+		document.body.appendChild(a)
+		a.click()
+		a.remove()
+		window.URL.revokeObjectURL(url)
 
 		return res.data
 	}

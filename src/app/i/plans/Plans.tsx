@@ -1,7 +1,7 @@
 'use client'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Pencil, Plus, Trash, X } from 'lucide-react'
+import { Pencil, Plus, Trash, Upload, X } from 'lucide-react'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -55,6 +55,7 @@ export function Plans() {
 
 	const [modal, setModal] = useState(false)
 	const [filters, setFilters] = useState<IPlans>()
+	const [importModal, setImportModal] = useState(false)
 	const [selectedPlan, setSelectedPlan] = useState<any | null>(null)
 	const [actionType, setActionType] = useState<
 		'create' | 'edit' | 'delete' | null
@@ -95,6 +96,19 @@ export function Plans() {
 		}
 	})
 
+	const { mutate: importPlans, isPending } = useMutation({
+		mutationKey: ['plans-import'],
+		mutationFn: (data: FormData) => planService.upload(data),
+		onSuccess: () => {
+			toast.success('Записи импортированы')
+			queryClient.invalidateQueries({ queryKey: ['plans'] })
+			setImportModal(false)
+		},
+		onError: () => {
+			toast.error('Произошла ошибка при импорте')
+		}
+	})
+
 	const onSubmitCreate: SubmitHandler<IPlanCreate> = data => {
 		createOrEditPlan(data)
 	}
@@ -120,6 +134,19 @@ export function Plans() {
 		}
 		setActionType(type)
 		setModal(!modal)
+	}
+
+	const handleImportModal = () => {
+		setImportModal(!importModal)
+	}
+
+	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0]
+		if (file) {
+			const formData = new FormData()
+			formData.append('file', file)
+			importPlans(formData)
+		}
 	}
 
 	const { data, isLoading } = useQuery({
@@ -189,6 +216,13 @@ export function Plans() {
 					>
 						<Plus />
 						<p>Создать</p>
+					</div>
+					<div
+						className='flex items-center gap-2 p-3 border borde-solid border-primary w-fit rounded-lg transition-colors cursor-pointer hover:bg-primary'
+						onClick={handleImportModal}
+					>
+						<Upload />
+						<p>Импортировать</p>
 					</div>
 				</div>
 
@@ -373,6 +407,30 @@ export function Plans() {
 									</div>
 								)}
 							</form>
+						</div>
+					</div>
+				)}
+
+				{importModal && (
+					<div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'>
+						<div className='bg-bg p-4 rounded-lg shadow-lg'>
+							<div className='flex items-center justify-between'>
+								<h1 className='text-2xl font-black'>Импорт данных</h1>
+								<X
+									size={24}
+									onClick={() => setImportModal(false)}
+									className='rounded-full transition-colors cursor-pointer hover:bg-primary'
+								/>
+							</div>
+							<div className='flex flex-col gap-4 mt-4'>
+								<input
+									type='file'
+									accept='.xlsx,.xls'
+									onChange={handleFileChange}
+									className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
+								/>
+								{isPending && <Loader />}
+							</div>
 						</div>
 					</div>
 				)}

@@ -17,6 +17,12 @@ class GroupService {
 		return res.data
 	}
 
+	async upload(data: FormData) {
+		const res = await axiosWithAuth.post<IGroup>(`${this.URL}/upload`, data)
+
+		return res.data
+	}
+
 	async update(id: string, data: IGroupUpdate) {
 		const res = await axiosWithAuth.patch<IGroup>(
 			`${this.URL}/update?id=${id}`,

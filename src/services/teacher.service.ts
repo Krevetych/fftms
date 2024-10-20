@@ -17,6 +17,12 @@ class TeacherService {
 		return res.data
 	}
 
+	async upload(data: FormData) {
+		const res = await axiosWithAuth.post<ITeacher>(`${this.URL}/upload`, data)
+
+		return res.data
+	}
+
 	async update(id: string, data: ITeacherUpdate) {
 		const res = await axiosWithAuth.patch<ITeacher>(
 			`${this.URL}/update?id=${id}`,

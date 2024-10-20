@@ -26,6 +26,13 @@ export interface IPlan {
 	group: IGroup
 }
 
+export interface IUnloadPlans {
+	rate: ERate
+	term?: ETerm
+	month?: EMonth
+	monthHalf?: EMonthHalf
+}
+
 export interface IFilteredPlan {
 	id: string
 	year: string

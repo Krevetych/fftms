@@ -1,14 +1,12 @@
 import axios, { type CreateAxiosDefaults } from 'axios'
+import { headers } from 'next/headers'
 
 import { errorCatch } from './error'
 import { tokenService } from '@/services/token.service'
 
 const options: CreateAxiosDefaults = {
-	baseURL: 'https://fftms.universal-hub.site',
-	//baseURL: 'http://localhost:8080',
-	headers: {
-		'Content-Type': 'application/json'
-	},
+	//baseURL: 'https://fftms.universal-hub.site',
+	baseURL: 'http://localhost:8080',
 	withCredentials: true
 }
 
@@ -20,6 +18,10 @@ axiosWithAuth.interceptors.request.use(cfg => {
 
 	if (cfg?.headers && accessToken) {
 		cfg.headers.Authorization = `Bearer ${accessToken}`
+	}
+
+	if (!(cfg.data instanceof FormData)) {
+		cfg.headers['Content-Type'] = 'application/json'
 	}
 
 	return cfg
