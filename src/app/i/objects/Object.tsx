@@ -67,9 +67,9 @@ export function Object() {
 		onError: (error: AxiosError) => {
 			const errorMessage = (error.response?.data as { message: string })
 				?.message
-				if (errorMessage === 'Object has related records') {
-					toast.warning('Запись имеет связь с учебным планом')
-				}
+			if (errorMessage === 'Object has related records') {
+				toast.warning('Запись имеет связь с учебным планом')
+			}
 		}
 	})
 
@@ -90,6 +90,8 @@ export function Object() {
 					'Возникла ошибка при импорте данных из файла, сравните структуру файла с примером и повторите попытку'
 				)
 			}
+
+			toast.warning(errorMessage)
 		}
 	})
 
