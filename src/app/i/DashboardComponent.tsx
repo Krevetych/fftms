@@ -16,7 +16,7 @@ export function DashboardComponent() {
 		<>
 			{isAdmin ? (
 				<>
-					<Heading title='Главная' />
+					<Heading title='Занесение часов преподавателей' />
 					<Dashboard />
 				</>
 			) : (

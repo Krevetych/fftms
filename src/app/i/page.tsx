@@ -5,7 +5,7 @@ import { NO_INDEX_PAGE } from '@/constants/seo.constants'
 import { DashboardComponent } from './DashboardComponent'
 
 export const metadata: Metadata = {
-	title: 'Главная',
+	title: 'Занесение часов преподавателей',
 	...NO_INDEX_PAGE
 }
 

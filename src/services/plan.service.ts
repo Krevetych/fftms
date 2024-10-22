@@ -1,5 +1,3 @@
-import { createElement } from 'react'
-
 import { MONTH, MONTH_HALF, RATE, TERM } from '@/constants/table.constants'
 
 import {
@@ -77,7 +75,7 @@ class PlanService {
 
 	async getFiltered(data: IFilters | undefined) {
 		const res = await axiosWithAuth.get<IFilteredPlan[]>(
-			`${this.URL}/find_by_filters?year=${data?.year}&teacher=${data?.teacher}&month=${data?.month}&monthHalf=${data?.monthHalf}&term=${data?.term}&rate=${data?.rate}`
+			`${this.URL}/find_by_filters?year=${data?.year}&month=${data?.month}&monthHalf=${data?.monthHalf}&term=${data?.term}&rate=${data?.rate}`
 		)
 
 		return res.data

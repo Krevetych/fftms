@@ -15,7 +15,7 @@ import { IMenuItem } from './menu.interface'
 export const MENU: IMenuItem[] = [
 	{
 		icon: LayoutDashboard,
-		name: 'Главная',
+		name: 'Занесение часов преподавателей',
 		link: PAGES.HOME,
 		access: ['admin']
 	},

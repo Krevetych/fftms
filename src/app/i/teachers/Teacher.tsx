@@ -141,6 +141,7 @@ export function Teachers() {
 
 	return (
 		<>
+			<div className='my-3 h-0.5 bg-primary w-full' />
 			<div className='flex items-center justify-between'>
 				<div className='flex gap-x-2'>
 					<div

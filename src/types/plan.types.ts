@@ -50,7 +50,6 @@ export interface IFilteredPlan {
 
 export interface IFilters {
 	year: string
-	teacher: string
 	rate: ERate
 	term?: ETerm
 	month?: EMonth
@@ -70,7 +69,6 @@ export interface IPlanCreate {
 	year: string
 	rate: ERate
 	maxHours: number
-	status: EStatus
 	worked: number
 	objectId: string
 	teacherId: string
