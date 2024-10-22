@@ -86,6 +86,9 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 									Семестр
 								</th>}
 							<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
+								Предмет
+							</th>
+							<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
 								Группа
 							</th>
 							<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
