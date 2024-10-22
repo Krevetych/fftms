@@ -157,6 +157,7 @@ export function Dashboard() {
 			term: data.term || ''
 		})
 		setEditingSubject(null)
+		setFiltersOpen(false)
 	}
 
 	const handleCreateSubject = async (

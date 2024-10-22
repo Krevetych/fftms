@@ -2,7 +2,7 @@ import { Check } from 'lucide-react'
 import { forwardRef } from 'react'
 import { UseFormGetValues, UseFormRegister } from 'react-hook-form'
 
-import { TYPE } from '@/constants/table.constants'
+import { RATE, TYPE } from '@/constants/table.constants'
 
 import { EType } from '@/types/group.types'
 import { ERate, IFilteredPlan } from '@/types/plan.types'
@@ -45,13 +45,13 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 			const subjectHours =
 				rate === ERate.HOURLY
 					? plan?.Subject?.reduce(
-							(sum: number, subject) => sum + subject.hours,
-							0
-						) || 0
+						(sum: number, subject) => sum + subject.hours,
+						0
+					) || 0
 					: plan?.SubjectTerm?.reduce(
-							(sum: number, subject) => sum + subject.hours,
-							0
-						) || 0
+						(sum: number, subject) => sum + subject.hours,
+						0
+					) || 0
 
 			return total + subjectHours
 		}, 0)
@@ -65,8 +65,26 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 					<thead>
 						<tr>
 							<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
-								Предмет
+								Год
 							</th>
+							<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
+								Преподаватель
+							</th>
+							<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
+								Тариф
+							</th>
+							{rate === ERate.HOURLY ?
+								<>
+									<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
+										Месяц
+									</th>
+									<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
+										Половина месяца
+									</th>
+								</>
+								: <th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
+									Семестр
+								</th>}
 							<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
 								Группа
 							</th>
@@ -84,6 +102,27 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 					<tbody>
 						{plans.map(plan => (
 							<tr key={plan.id}>
+								<td className='p-2 border-b border-gray-700'>
+									{plan.year}
+								</td>
+								<td className='p-2 border-b border-gray-700'>
+									{plan.teacher.fio}
+								</td>
+								<td className='p-2 border-b border-gray-700'>
+									{RATE[plan.rate]}
+								</td>
+								{rate === ERate.HOURLY ?
+									<>
+										<td className='p-2 border-b border-gray-700'>
+											{getValues('month') as EMonth}
+										</td>
+										<td className='p-2 border-b border-gray-700'>
+											{getValues('monthHalf') as EMonthHalf}
+										</td>
+									</>
+									: <td className='p-2 border-b border-gray-700'>
+										{getValues('term') as ETerm}
+									</td>}
 								<td className='p-2 border-b border-gray-700'>
 									{plan.Object.name}
 								</td>
