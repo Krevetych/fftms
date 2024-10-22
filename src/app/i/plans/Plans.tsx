@@ -95,6 +95,14 @@ export function Plans() {
 		onSuccess: () => {
 			toast.success('Запись удалена')
 			queryClient.invalidateQueries({ queryKey: ['plans'] })
+		},
+		onError: (error: AxiosError) => {
+			const errorMessage = (error.response?.data as { message: string })
+				?.message
+
+			if (errorMessage === 'Plan has related records') {
+				toast.warning('Запись имеет связь с вычитанными часами')
+			}
 		}
 	})
 
