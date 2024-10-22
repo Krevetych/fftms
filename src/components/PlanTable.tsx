@@ -2,7 +2,7 @@ import { Check } from 'lucide-react'
 import { forwardRef } from 'react'
 import { UseFormGetValues, UseFormRegister } from 'react-hook-form'
 
-import { RATE, TYPE } from '@/constants/table.constants'
+import { MONTH, MONTH_HALF, RATE, TERM, TYPE } from '@/constants/table.constants'
 
 import { EType } from '@/types/group.types'
 import { ERate, IFilteredPlan } from '@/types/plan.types'
@@ -114,14 +114,14 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 								{rate === ERate.HOURLY ?
 									<>
 										<td className='p-2 border-b border-gray-700'>
-											{getValues('month') as EMonth}
+											{MONTH[getValues('month') as EMonth]}
 										</td>
 										<td className='p-2 border-b border-gray-700'>
-											{getValues('monthHalf') as EMonthHalf}
+											{MONTH_HALF[getValues('monthHalf') as EMonthHalf]}
 										</td>
 									</>
 									: <td className='p-2 border-b border-gray-700'>
-										{getValues('term') as ETerm}
+										{TERM[getValues('term') as ETerm]}
 									</td>}
 								<td className='p-2 border-b border-gray-700'>
 									{plan.Object.name}
