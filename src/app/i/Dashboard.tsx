@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
+import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -21,7 +22,6 @@ import {
 	ISubjectCreate,
 	ISubjectTermCreate
 } from '@/types/subject.types'
-
 
 import { planService } from '@/services/plan.service'
 import { subjectService } from '@/services/subject.service'
@@ -50,6 +50,7 @@ export function Dashboard() {
 	const queryClient = useQueryClient()
 	const [filters, setFilters] = useState<IFilters>()
 	const [editingSubject, setEditingSubject] = useState<string | null>(null)
+	const [filtersOpen, setFiltersOpen] = useState(true)
 
 	const { data: teachersData, isLoading: isLoadingTeachers } = useQuery({
 		queryKey: ['teachers'],
@@ -102,6 +103,8 @@ export function Dashboard() {
 
 			if (errorMessage === 'Max hours exceeded') {
 				toast.error('Превышено максимальное количество часов')
+			} else if (errorMessage === 'Invalid hours') {
+				toast.error('Часы не могут быть отрицательными')
 			} else {
 				toast.error('Неизвестная ошибка')
 			}
@@ -136,6 +139,8 @@ export function Dashboard() {
 
 			if (errorMessage === 'Max hours exceeded') {
 				toast.error('Превышено максимальное количество часов')
+			} else if (errorMessage === 'Invalid hours') {
+				toast.error('Часы не могут быть отрицательными')
 			} else {
 				toast.error('Неизвестная ошибка')
 			}
@@ -203,101 +208,126 @@ export function Dashboard() {
 	}
 
 	return (
-		<div className='flex justify-between'>
-			<div className='w-2/3'>
+		<div className='flex justify-between overflow-y-hidden'>
+			<div className='w-full'>
 				{isLoadingFPlans ? (
 					<Loader />
 				) : fPlansData?.length ? (
-					<PlanTable
-						plans={fPlansData}
-						editingSubject={editingSubject}
-						handleHoursClick={handleHoursClick}
-						handleBlur={handleBlur}
-						register={register}
-						rate={watch('rate')}
-						getValues={getValues}
-						handleCreateSubject={handleCreateSubject}
-					/>
+					<div className='overflow-x-auto'>
+						<div className='overflow-y-auto max-h-[75vh]'>
+							<PlanTable
+								plans={fPlansData}
+								editingSubject={editingSubject}
+								handleHoursClick={handleHoursClick}
+								handleBlur={handleBlur}
+								register={register}
+								rate={watch('rate')}
+								getValues={getValues}
+								handleCreateSubject={handleCreateSubject}
+							/>
+						</div>
+					</div>
 				) : (
 					<NotFoundData />
 				)}
 			</div>
-			<div className='w-1/3 flex items-center justify-center'>
-				<form
-					onSubmit={handleSubmit(onSubmit)}
-					className='flex bg-card border border-primary rounded-2xl border-solid p-10 flex-col justify-center items-center w-fit'
-				>
-					<div>
-						<SelectInput
-							label='Год'
-							options={uniqueYears.map(year => ({ value: year, label: year }))}
-							{...register('year', { required: true })}
-						/>
-						<SelectInput
-							label='Преподаватель'
-							options={
-								teachersData?.map(teacher => ({
-									value: teacher.fio,
-									label: teacher.fio
-								})) || []
-							}
-							loading={isLoadingTeachers}
-							{...register('teacher', { required: true })}
-						/>
-						<SelectInput
-							label='Тариф'
-							options={Object.entries(RATE).map(([rate, value]) => ({
-								value: rate as ERate,
-								label: value
-							}))}
-							{...register('rate', { required: true })}
-						/>
-						{watch('rate') === ERate.SALARIED ? (
+			<div
+				className={`fixed top-10 right-10 bg-card shadow-lg z-50 transition-all my-3 duration-700 ${filtersOpen ? 'max-h-screen border border-primary border-solid rounded-2xl py-5 px-10' : 'max-h-0 overflow-hidden border border-primary border-solid  rounded-lg'}`}
+				style={{
+					maxHeight: filtersOpen ? '500px' : '100px',
+					overflow: 'hidden',
+					transition: 'max-height 0.7s ease'
+				}}
+			>
+				<div className='flex items-center justify-between p-2 bg-card'>
+					<h2 className='font-bold'>Фильтры</h2>
+					<button
+						className='text-primary'
+						onClick={() => setFiltersOpen(!filtersOpen)}
+					>
+						{filtersOpen ? <ChevronUp /> : <ChevronDown />}
+					</button>
+				</div>
+				{filtersOpen && (
+					<form
+						onSubmit={handleSubmit(onSubmit)}
+						className='flex bg-card flex-col justify-center items-center w-fit'
+					>
+						<div>
 							<SelectInput
-								label='Семестр'
-								options={Object.entries(TERM).map(([term, value]) => ({
-									value: term as ETerm,
+								label='Год'
+								options={uniqueYears.map(year => ({
+									value: year,
+									label: year
+								}))}
+								{...register('year', { required: true })}
+							/>
+							<SelectInput
+								label='Преподаватель'
+								options={
+									teachersData?.map(teacher => ({
+										value: teacher.fio,
+										label: teacher.fio
+									})) || []
+								}
+								loading={isLoadingTeachers}
+								{...register('teacher', { required: true })}
+							/>
+							<SelectInput
+								label='Тариф'
+								options={Object.entries(RATE).map(([rate, value]) => ({
+									value: rate as ERate,
 									label: value
 								}))}
-								{...register('term', { required: true })}
+								{...register('rate', { required: true })}
 							/>
-						) : watch('rate') === ERate.HOURLY ? (
-							<>
+							{watch('rate') === ERate.SALARIED ? (
 								<SelectInput
-									label='Месяц'
-									options={Object.entries(MONTH).map(([key, value]) => ({
-										value: key as EMonth,
+									label='Семестр'
+									options={Object.entries(TERM).map(([term, value]) => ({
+										value: term as ETerm,
 										label: value
 									}))}
-									{...register('month', { required: true })}
+									{...register('term', { required: true })}
 								/>
-								<SelectInput
-									label='Половина месяца'
-									options={Object.entries(MONTH_HALF).map(([key, value]) => ({
-										value: key as EMonthHalf,
-										label: value
-									}))}
-									{...register('monthHalf', { required: true })}
-								/>
-							</>
-						) : null}
-						<div className='flex gap-x-2'>
-							<button
-								type='submit'
-								className='w-full p-2 transition-colors bg-primary rounded-lg hover:bg-primary/80'
-							>
-								Применить
-							</button>
-							<button
-								type='button'
-								onClick={resetFilters}
-								className='w-full p-2 transition-colors bg-secondary rounded-lg hover:bg-secondary/80'
-							>
-								Сбросить
-							</button>
+							) : watch('rate') === ERate.HOURLY ? (
+								<>
+									<SelectInput
+										label='Месяц'
+										options={Object.entries(MONTH).map(([key, value]) => ({
+											value: key as EMonth,
+											label: value
+										}))}
+										{...register('month', { required: true })}
+									/>
+									<SelectInput
+										label='Половина месяца'
+										options={Object.entries(MONTH_HALF).map(([key, value]) => ({
+											value: key as EMonthHalf,
+											label: value
+										}))}
+										{...register('monthHalf', { required: true })}
+									/>
+								</>
+							) : null}
+							<div className='flex gap-x-2'>
+								<button
+									type='submit'
+									className='w-full p-2 transition-colors bg-primary rounded-lg hover:bg-primary/80'
+								>
+									Применить
+								</button>
+								<button
+									type='button'
+									onClick={resetFilters}
+									className='w-full p-2 transition-colors bg-secondary rounded-lg hover:bg-secondary/80'
+								>
+									Сбросить
+								</button>
+							</div>
 						</div>
-					</div>
-				</form>
+					</form>
+				)}
 			</div>
 		</div>
 	)

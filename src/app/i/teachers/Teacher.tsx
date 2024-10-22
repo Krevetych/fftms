@@ -1,7 +1,9 @@
 'use client'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { AxiosError } from 'axios'
 import { Pencil, Plus, Trash, Upload, X } from 'lucide-react'
+import { type } from 'os'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -24,6 +26,7 @@ export function Teachers() {
 	const [actionType, setActionType] = useState<
 		'create' | 'edit' | 'delete' | null
 	>(null)
+	const [searchTerm, setSearchTerm] = useState<string>('')
 
 	const queryClient = useQueryClient()
 
@@ -42,6 +45,13 @@ export function Teachers() {
 			setActionType(null)
 			queryClient.invalidateQueries({ queryKey: ['teachers'] })
 			setModal(false)
+		},
+		onError: (error: AxiosError) => {
+			const errorMessage = (error.response?.data as { message: string })
+				?.message
+			if (errorMessage === 'Teacher already exists') {
+				toast.error('Преподаватель уже существует')
+			}
 		}
 	})
 
@@ -51,6 +61,14 @@ export function Teachers() {
 		onSuccess: () => {
 			toast.success('Запись удалена')
 			queryClient.invalidateQueries({ queryKey: ['teachers'] })
+		},
+		onError: (error: AxiosError) => {
+			const errorMessage = (error.response?.data as { message: string })
+				?.message
+
+			if (errorMessage === 'Teacher has related records') {
+				toast.warning('Запись имеет связь с учебным планом')
+			}
 		}
 	})
 
@@ -62,8 +80,15 @@ export function Teachers() {
 			queryClient.invalidateQueries({ queryKey: ['teachers'] })
 			setImportModal(false)
 		},
-		onError: () => {
-			toast.error('Произошла ошибка при импорте')
+		onError: (error: AxiosError) => {
+			const errorMessage = (error.response?.data as { message: string })
+				?.message
+
+			if (errorMessage === "Can't create teacher") {
+				toast.error(
+					'Возникла ошибка при импорте данных из файла, сравните структуру файла с примером и повторите попытку'
+				)
+			}
 		}
 	})
 
@@ -110,22 +135,37 @@ export function Teachers() {
 		queryFn: () => teacherService.getAll()
 	})
 
+	const filteredTeachers = data?.filter((teacher: ITeacher) =>
+		teacher.fio.toLowerCase().includes(searchTerm.toLowerCase())
+	)
+
 	return (
 		<>
-			<div className='flex gap-x-2'>
-				<div
-					className='flex items-center gap-2 p-3 bg-primary w-fit rounded-lg transition-colors cursor-pointer hover:bg-primary/80'
-					onClick={() => handleModal('create')}
-				>
-					<Plus />
-					<p>Создать</p>
+			<div className='flex items-center justify-between'>
+				<div className='flex gap-x-2'>
+					<div
+						className='flex items-center gap-2 p-3 bg-primary w-fit rounded-lg transition-colors cursor-pointer hover:bg-primary/80'
+						onClick={() => handleModal('create')}
+					>
+						<Plus />
+						<p>Создать</p>
+					</div>
+					<div
+						className='flex items-center gap-2 p-3 border borde-solid border-primary w-fit rounded-lg transition-colors cursor-pointer hover:bg-primary'
+						onClick={handleImportModal}
+					>
+						<Upload />
+						<p>Импортировать</p>
+					</div>
 				</div>
-				<div
-					className='flex items-center gap-2 p-3 border borde-solid border-primary w-fit rounded-lg transition-colors cursor-pointer hover:bg-primary'
-					onClick={handleImportModal}
-				>
-					<Upload />
-					<p>Импортировать</p>
+				<div className='flex gap-x-2 mb-4'>
+					<input
+						type='text'
+						placeholder='Поиск по ФИО'
+						value={searchTerm}
+						onChange={e => setSearchTerm(e.target.value)}
+						className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-transparent border border-solid focus:border-primary'
+					/>
 				</div>
 			</div>
 
@@ -219,38 +259,46 @@ export function Teachers() {
 
 			{isLoading ? (
 				<Loader />
-			) : data?.length !== 0 && data ? (
-				<table className='w-full mt-4 border-collapse'>
-					<thead>
-						<tr>
-							<th className='text-left p-2 border-b border-gray-700'>ФИО</th>
-							<th className='text-left p-2 border-b border-gray-700'>
-								Действия
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						{data.map((teacher: ITeacher) => (
-							<tr key={teacher.id}>
-								<td className='p-2 border-b border-gray-700'>{teacher.fio}</td>
-								<td className='p-2 border-b border-gray-700'>
-									<div className='flex gap-x-2'>
-										<Pencil
-											size={20}
-											className='cursor-pointer text-secondary hover:text-secondary/80'
-											onClick={() => handleModal('edit', teacher)}
-										/>
-										<Trash
-											size={20}
-											className='cursor-pointer text-red-500 hover:text-red-700'
-											onClick={() => handleModal('delete', teacher)}
-										/>
-									</div>
-								</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
+			) : filteredTeachers?.length !== 0 && filteredTeachers ? (
+				<div className='overflow-x-auto'>
+					<div className='overflow-y-auto max-h-[75vh]'>
+						<table className='w-full mt-4 border-collapse'>
+							<thead>
+								<tr>
+									<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
+										ФИО
+									</th>
+									<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
+										Действия
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								{filteredTeachers.map((teacher: ITeacher) => (
+									<tr key={teacher.id}>
+										<td className='p-2 border-b border-gray-700'>
+											{teacher.fio}
+										</td>
+										<td className='p-2 border-b border-gray-700'>
+											<div className='flex gap-x-2'>
+												<Pencil
+													size={20}
+													className='cursor-pointer text-secondary hover:text-secondary/80'
+													onClick={() => handleModal('edit', teacher)}
+												/>
+												<Trash
+													size={20}
+													className='cursor-pointer text-red-500 hover:text-red-700'
+													onClick={() => handleModal('delete', teacher)}
+												/>
+											</div>
+										</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
+				</div>
 			) : (
 				<NotFoundData />
 			)}

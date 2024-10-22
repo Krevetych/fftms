@@ -10,7 +10,7 @@ import { Object } from './Object'
 export function ObjectComponent() {
 	const { data } = useProfile()
 
-	const isAdmin = data?.isAdmin || false
+	const isAdmin = data?.isAdmin
 
 	return (
 		<>

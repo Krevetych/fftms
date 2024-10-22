@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 
 import { MONTH, MONTH_HALF, RATE, TERM } from '@/constants/table.constants'
 
-import { ERate, IUnloadPlans } from '@/types/plan.types'
+import { ERate, IPlan, IUnloadPlans } from '@/types/plan.types'
 import { EMonth, EMonthHalf, ETerm } from '@/types/subject.types'
 
 import SelectInput from '../SelectInput'
@@ -16,6 +16,7 @@ import SelectInput from '../SelectInput'
 import { planService } from '@/services/plan.service'
 
 interface PlanForm {
+	year: string
 	rate: ERate
 	term: ETerm
 	month: EMonth
@@ -27,6 +28,11 @@ export function Unload({ setModal }: { setModal: (value: boolean) => void }) {
 		mode: 'onChange'
 	})
 	const [filters, setFilters] = useState<IUnloadPlans>()
+
+	const { data } = useQuery({
+		queryKey: ['plans'],
+		queryFn: () => planService.getAll()
+	})
 
 	const { isSuccess } = useQuery({
 		queryKey: ['unload-plans', filters],
@@ -40,8 +46,11 @@ export function Unload({ setModal }: { setModal: (value: boolean) => void }) {
 		setModal(false)
 	}
 
+	const uniqueYears = Array.from(new Set(data?.map((plan: IPlan) => plan.year)))
+
 	const onSubmit: SubmitHandler<PlanForm> = data => {
 		setFilters({
+			year: data.year,
 			rate: data.rate,
 			term: data.term || '',
 			month: data.month || '',
@@ -65,7 +74,15 @@ export function Unload({ setModal }: { setModal: (value: boolean) => void }) {
 						/>
 					</div>
 					<SelectInput
-						label='Тариф'
+						label='Выберите год'
+						options={uniqueYears.map(year => ({
+							value: year,
+							label: year
+						}))}
+						{...register('year', { required: true })}
+					/>
+					<SelectInput
+						label='Выберите тариф'
 						options={Object.entries(RATE).map(([rate, value]) => ({
 							value: rate as ERate,
 							label: value

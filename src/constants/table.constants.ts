@@ -48,10 +48,6 @@ export const SUBJECT = [
 		title: 'Часы'
 	},
 	{
-		id: 4,
-		title: 'План'
-	},
-	{
 		id: 5,
 		title: 'Предмет'
 	},
@@ -81,10 +77,6 @@ export const SUBJECT_RATE = [
 	{
 		id: 3,
 		title: 'Часы'
-	},
-	{
-		id: 4,
-		title: 'План'
 	},
 	{
 		id: 5,

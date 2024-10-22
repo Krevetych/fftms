@@ -1,5 +1,7 @@
 import { createElement } from 'react'
 
+import { MONTH, MONTH_HALF, RATE, TERM } from '@/constants/table.constants'
+
 import {
 	ERate,
 	IFilteredPlan,
@@ -36,7 +38,7 @@ class PlanService {
 
 	async unload(dto: IUnloadPlans | undefined) {
 		const res = await axiosWithAuth.get(
-			`${this.URL}/unload?rate=${dto?.rate}&term=${dto?.term}&month=${dto?.month}&monthHalf=${dto?.monthHalf}`,
+			`${this.URL}/unload?year=${dto?.year}&rate=${dto?.rate}&term=${dto?.term}&month=${dto?.month}&monthHalf=${dto?.monthHalf}`,
 			{ responseType: 'blob' }
 		)
 
@@ -44,9 +46,14 @@ class PlanService {
 
 		const url = window.URL.createObjectURL(blob)
 
+		const era =
+			dto?.rate === ERate.HOURLY
+				? `${MONTH[dto?.month as EMonth]}-${MONTH_HALF[dto?.monthHalf as EMonthHalf]} половина`
+				: `${TERM[dto?.term as ETerm]} семестр`
+
 		const a = document.createElement('a')
 		a.href = url
-		a.download = 'plans.xlsx'
+		a.download = `${dto?.year}-${RATE[dto?.rate as ERate]}-${era}.xlsx`
 		document.body.appendChild(a)
 		a.click()
 		a.remove()

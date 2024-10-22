@@ -27,6 +27,7 @@ export interface IPlan {
 }
 
 export interface IUnloadPlans {
+	year: string
 	rate: ERate
 	term?: ETerm
 	month?: EMonth

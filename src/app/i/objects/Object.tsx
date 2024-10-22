@@ -1,18 +1,21 @@
 'use client'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { AxiosError } from 'axios'
 import { Pencil, Plus, Trash, Upload, X } from 'lucide-react'
+import { type } from 'os'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import style from 'styled-jsx/style'
 
 import Loader from '@/components/Loader'
 import NotFoundData from '@/components/NotFoundData'
 
-import { IObjectCreate, IObjectUpdate } from '@/types/object.types'
+import { IObject, IObjectCreate, IObjectUpdate } from '@/types/object.types'
+import { ITeacher } from '@/types/teacher.types'
 
 import { objectService } from '@/services/object.service'
-import { teacherService } from '@/services/teacher.service'
 
 export function Object() {
 	const { register, handleSubmit, reset, setValue } = useForm<IObjectCreate>({
@@ -25,6 +28,7 @@ export function Object() {
 	const [actionType, setActionType] = useState<
 		'create' | 'edit' | 'delete' | null
 	>(null)
+	const [searchTerm, setSearchTerm] = useState<string>('')
 
 	const queryClient = useQueryClient()
 
@@ -43,6 +47,13 @@ export function Object() {
 			setActionType(null)
 			queryClient.invalidateQueries({ queryKey: ['objects'] })
 			setModal(false)
+		},
+		onError: (error: AxiosError) => {
+			const errorMessage = (error.response?.data as { message: string })
+				?.message
+			if (errorMessage === 'Object already exists') {
+				toast.error('Предмет уже существует')
+			}
 		}
 	})
 
@@ -52,6 +63,13 @@ export function Object() {
 		onSuccess: () => {
 			toast.success('Запись удалена')
 			queryClient.invalidateQueries({ queryKey: ['objects'] })
+		},
+		onError: (error: AxiosError) => {
+			const errorMessage = (error.response?.data as { message: string })
+				?.message
+			if (errorMessage === 'Object has related records') {
+				toast.warning('Запись имеет связь с учебным планом')
+			}
 		}
 	})
 
@@ -63,8 +81,15 @@ export function Object() {
 			queryClient.invalidateQueries({ queryKey: ['objects'] })
 			setImportModal(false)
 		},
-		onError: () => {
-			toast.error('Произошла ошибка при импорте')
+		onError: (error: AxiosError) => {
+			const errorMessage = (error.response?.data as { message: string })
+				?.message
+
+			if (errorMessage === "Can't create object") {
+				toast.error(
+					'Возникла ошибка при импорте данных из файла, сравните структуру файла с примером и повторите попытку'
+				)
+			}
 		}
 	})
 
@@ -113,22 +138,39 @@ export function Object() {
 		}
 	})
 
+	const filteredObject = data?.filter((object: IObject) =>
+		object.name.toLowerCase().includes(searchTerm.toLowerCase())
+	)
+
 	return (
 		<>
-			<div className='flex items-center gap-2'>
-				<div
-					className='flex items-center gap-2 p-3 bg-primary w-fit rounded-lg transition-colors cursor-pointer hover:bg-primary/80'
-					onClick={() => handleModal('create')}
-				>
-					<Plus />
-					<p>Создать</p>
+			<div className='flex items-center justify-between'>
+				<div className='flex gap-x-2'>
+					<div
+						className='flex items-center gap-2 p-3 bg-primary w-fit rounded-lg transition-colors cursor-pointer hover:bg-primary/80'
+						onClick={() => handleModal('create')}
+					>
+						<Plus />
+						<p>Создать</p>
+					</div>
+					<div
+						className='flex items-center gap-2 p-3 border borde-solid border-primary w-fit rounded-lg transition-colors cursor-pointer hover:bg-primary'
+						onClick={handleImportModal}
+					>
+						<Upload />
+						<p>Импортировать</p>
+					</div>
 				</div>
-				<div
-					className='flex items-center gap-2 p-3 border borde-solid border-primary w-fit rounded-lg transition-colors cursor-pointer hover:bg-primary'
-					onClick={handleImportModal}
-				>
-					<Upload />
-					<p>Импортировать</p>
+
+				<div className='flex gap-x-2 mb-4'>
+					<input
+						type='text'
+						placeholder='Поиск по названию предмета'
+						value={searchTerm}
+						onChange={e => setSearchTerm(e.target.value)}
+						className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-transparent border border-solid focus:border-primary text-ellipsis overflow-hidden whitespace-nowrap'
+						style={{ maxWidth: '100%', overflow: 'hidden' }}
+					/>
 				</div>
 			</div>
 
@@ -222,40 +264,46 @@ export function Object() {
 
 			{isLoading ? (
 				<Loader />
-			) : data?.length !== 0 && data ? (
-				<table className='w-full mt-4 border-collapse'>
-					<thead>
-						<tr>
-							<th className='text-left p-2 border-b border-gray-700'>
-								Название предмета
-							</th>
-							<th className='text-left p-2 border-b border-gray-700'>
-								Действия
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						{data.map(object => (
-							<tr key={object.id}>
-								<td className='p-2 border-b border-gray-700'>{object.name}</td>
-								<td className='p-2 border-b border-gray-700'>
-									<div className='flex gap-x-2'>
-										<Pencil
-											size={20}
-											className='cursor-pointer text-secondary hover:text-secondary/80'
-											onClick={() => handleModal('edit', object)}
-										/>
-										<Trash
-											size={20}
-											className='cursor-pointer text-red-500 hover:text-red-700'
-											onClick={() => handleModal('delete', object)}
-										/>
-									</div>
-								</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
+			) : filteredObject?.length !== 0 && filteredObject ? (
+				<div className='overflow-x-auto'>
+					<div className='overflow-y-auto max-h-[75vh]'>
+						<table className='w-full mt-4 border-collapse'>
+							<thead>
+								<tr>
+									<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
+										Название предмета
+									</th>
+									<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
+										Действия
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								{filteredObject.map(object => (
+									<tr key={object.id}>
+										<td className='p-2 border-b border-gray-700'>
+											{object.name}
+										</td>
+										<td className='p-2 border-b border-gray-700'>
+											<div className='flex gap-x-2'>
+												<Pencil
+													size={20}
+													className='cursor-pointer text-secondary hover:text-secondary/80'
+													onClick={() => handleModal('edit', object)}
+												/>
+												<Trash
+													size={20}
+													className='cursor-pointer text-red-500 hover:text-red-700'
+													onClick={() => handleModal('delete', object)}
+												/>
+											</div>
+										</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
+				</div>
 			) : (
 				<NotFoundData />
 			)}

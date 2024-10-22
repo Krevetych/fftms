@@ -1,10 +1,24 @@
 'use client'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Loader, Pencil, Plus, Trash, Upload, X } from 'lucide-react'
+import { AxiosError } from 'axios'
+import { table } from 'console'
+import {
+	ChevronDown,
+	ChevronUp,
+	Loader,
+	Pencil,
+	Plus,
+	Trash,
+	Upload,
+	X
+} from 'lucide-react'
+import { type } from 'os'
+import { title } from 'process'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import style from 'styled-jsx/style'
 
 import NotFoundData from '@/components/NotFoundData'
 import SelectInput from '@/components/SelectInput'
@@ -16,9 +30,11 @@ import {
 	EStatus,
 	EType,
 	IFilteredGroup,
+	IGroup,
 	IGroupCreate,
 	IGroupUpdate
 } from '@/types/group.types'
+import { ITeacher } from '@/types/teacher.types'
 
 import { groupService } from '@/services/group.service'
 
@@ -48,6 +64,8 @@ export function Groups() {
 	const [actionType, setActionType] = useState<
 		'create' | 'edit' | 'delete' | null
 	>(null)
+	const [searchTerm, setSearchTerm] = useState<string>('')
+	const [filtersOpen, setFiltersOpen] = useState(false)
 
 	const queryClient = useQueryClient()
 
@@ -72,6 +90,14 @@ export function Groups() {
 			setActionType(null)
 			queryClient.invalidateQueries({ queryKey: ['groups'] })
 			setModal(false)
+		},
+		onError: (error: AxiosError) => {
+			const errorMessage = (error.response?.data as { message: string })
+				?.message
+
+			if (errorMessage === 'Group already exists') {
+				toast.error('Группа уже существует')
+			}
 		}
 	})
 
@@ -81,6 +107,14 @@ export function Groups() {
 		onSuccess: () => {
 			toast.success('Запись удалена')
 			queryClient.invalidateQueries({ queryKey: ['groups'] })
+		},
+		onError: (error: AxiosError) => {
+			const errorMessage = (error.response?.data as { message: string })
+				?.message
+
+			if (errorMessage === 'Group has related records') {
+				toast.warning('Запись имеет связь с учебным планом')
+			}
 		}
 	})
 
@@ -92,8 +126,15 @@ export function Groups() {
 			queryClient.invalidateQueries({ queryKey: ['groups'] })
 			setImportModal(false)
 		},
-		onError: () => {
-			toast.error('Произошла ошибка при импорте')
+		onError: (error: AxiosError) => {
+			const errorMessage = (error.response?.data as { message: string })
+				?.message
+
+			if (errorMessage === "Can't create group") {
+				toast.error(
+					'Возникла ошибка при импорте данных из файла, сравните структуру файла с примером и повторите попытку'
+				)
+			}
 		}
 	})
 
@@ -164,25 +205,41 @@ export function Groups() {
 		filterReset()
 	}
 
-	return (
-		<div className='flex justify-between'>
-			<div className='w-2/3'>
-				<div className='flex gap-x-2'>
-					<div
-						className='flex items-center gap-2 p-3 bg-primary w-fit rounded-lg transition-colors cursor-pointer hover:bg-primary/80'
-						onClick={() => handleModal('create')}
-					>
-						<Plus />
-						<p>Создать</p>
-					</div>
+	const filteredGroups = mapData?.filter((group: IGroup) =>
+		group.name.toLowerCase().includes(searchTerm.toLowerCase())
+	)
 
-					<div
-						className='flex items-center gap-2 p-3 border borde-solid border-primary w-fit rounded-lg transition-colors cursor-pointer hover:bg-primary'
-						onClick={handleImportModal}
-					>
-						<Upload />
-						<p>Импортировать</p>
+	return (
+		<div className='flex justify-between overflow-y-hidden'>
+			<div className='w-full'>
+				<div className='flex items-center justify-between'>
+					<div className='flex gap-x-2'>
+						<div
+							className='flex items-center gap-2 p-3 bg-primary w-fit rounded-lg transition-colors cursor-pointer hover:bg-primary/80'
+							onClick={() => handleModal('create')}
+						>
+							<Plus />
+							<p>Создать</p>
+						</div>
+
+						<div
+							className='flex items-center gap-2 p-3 border borde-solid border-primary w-fit rounded-lg transition-colors cursor-pointer hover:bg-primary'
+							onClick={handleImportModal}
+						>
+							<Upload />
+							<p>Импортировать</p>
+						</div>
 					</div>
+					<div className='flex gap-x-2 mb-4'>
+					<input
+						type='text'
+						placeholder='Поиск по названию группы'
+						value={searchTerm}
+						onChange={e => setSearchTerm(e.target.value)}
+						className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-transparent border border-solid focus:border-primary text-ellipsis overflow-hidden whitespace-nowrap'
+						style={{ maxWidth: '100%', overflow: 'hidden' }}
+					/>
+				</div>
 				</div>
 
 				{modal && (
@@ -341,113 +398,135 @@ export function Groups() {
 
 				{isLoading ? (
 					<Loader />
-				) : mapData?.length !== 0 && mapData ? (
+				) : filteredGroups?.length !== 0 && filteredGroups ? (
 					<div className='overflow-x-auto'>
-						<table className='w-full mt-4 border-collapse'>
-							<thead className='whitespace-nowrap'>
-								<tr>
-									{GROUP.map(group => (
-										<th
-											className='text-left p-2 border-b border-gray-700'
-											key={group.id}
-										>
-											{group.title}
+						<div className='overflow-y-auto max-h-[75vh]'>
+							<table className='w-full mt-4 border-collapse'>
+								<thead className='whitespace-nowrap'>
+									<tr>
+										{GROUP.map(group => (
+											<th
+												className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'
+												key={group.id}
+											>
+												{group.title}
+											</th>
+										))}
+										<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
+											Действия
 										</th>
-									))}
-									<th className='text-left p-2 border-b border-gray-700'>
-										Действия
-									</th>
-								</tr>
-							</thead>
-							<tbody>
-								{mapData.map(group => (
-									<tr key={group.id}>
-										<td className='p-2 border-b border-gray-700'>
-											{group.name}
-										</td>
-										<td className='p-2 border-b border-gray-700'>
-											{COURSE[group.course as ECourse]}
-										</td>
-										<td className='p-2 border-b border-gray-700'>
-											{TYPE[group.type as EType]}
-										</td>
-										<td className='p-2 border-b border-gray-700'>
-											{group.status === EStatus.ACTIVE ? (
-												<div className='h-5 w-10 bg-primary rounded-full'></div>
-											) : (
-												<div className='h-5 w-10 bg-red-500 rounded-full'></div>
-											)}
-										</td>
-										<td className='p-2 border-b border-gray-700'>
-											<div className='flex gap-x-2'>
-												<Pencil
-													size={20}
-													className='cursor-pointer text-secondary hover:text-secondary/80'
-													onClick={() => handleModal('edit', group)}
-												/>
-												<Trash
-													size={20}
-													className='cursor-pointer text-red-500 hover:text-red-700'
-													onClick={() => handleModal('delete', group)}
-												/>
-											</div>
-										</td>
 									</tr>
-								))}
-							</tbody>
-						</table>
+								</thead>
+								<tbody>
+									{filteredGroups.map(group => (
+										<tr key={group.id}>
+											<td className='p-2 border-b border-gray-700'>
+												{group.name}
+											</td>
+											<td className='p-2 border-b border-gray-700'>
+												{COURSE[group.course as ECourse]}
+											</td>
+											<td className='p-2 border-b border-gray-700'>
+												{TYPE[group.type as EType]}
+											</td>
+											<td className='p-2 border-b border-gray-700'>
+												{group.status === EStatus.ACTIVE ? (
+													<div className='h-5 w-10 bg-primary rounded-full'></div>
+												) : (
+													<div className='h-5 w-10 bg-red-500 rounded-full'></div>
+												)}
+											</td>
+											<td className='p-2 border-b border-gray-700'>
+												<div className='flex gap-x-2'>
+													<Pencil
+														size={20}
+														className='cursor-pointer text-secondary hover:text-secondary/80'
+														onClick={() => handleModal('edit', group)}
+													/>
+													<Trash
+														size={20}
+														className='cursor-pointer text-red-500 hover:text-red-700'
+														onClick={() => handleModal('delete', group)}
+													/>
+												</div>
+											</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						</div>
 					</div>
 				) : (
 					<NotFoundData />
 				)}
 			</div>
-			<div className='w-1/3 flex items-center justify-center'>
-				<form
-					onSubmit={filterHandleSubmit(onSubmitFiltered)}
-					className='flex bg-card border border-primary rounded-2xl border-solid p-10 flex-col justify-center items-center w-fit'
-				>
-					<div>
-						<SelectInput
-							label='Тип группы'
-							options={Object.entries(TYPE).map(([type, value]) => ({
-								value: type as EType,
-								label: value
-							}))}
-							{...filterRegister('type')}
-						/>
-						<SelectInput
-							label='Курс'
-							options={Object.entries(COURSE).map(([course, value]) => ({
-								value: course as ECourse,
-								label: value
-							}))}
-							{...filterRegister('course')}
-						/>
-						<SelectInput
-							label='Статус'
-							options={Object.entries(GROUP_STATUS).map(([status, value]) => ({
-								value: status as EStatus,
-								label: value
-							}))}
-							{...filterRegister('status')}
-						/>
-						<div className='flex gap-x-2'>
-							<button
-								type='submit'
-								className='w-full p-2 transition-colors bg-primary rounded-lg hover:bg-primary/80'
-							>
-								Применить
-							</button>
-							<button
-								type='button'
-								onClick={resetFilters}
-								className='w-full p-2 transition-colors bg-secondary rounded-lg hover:bg-secondary/80'
-							>
-								Сбросить
-							</button>
+			<div
+				className={`fixed top-10 right-10 bg-card shadow-lg z-50 transition-all my-3 duration-700 ${filtersOpen ? 'max-h-screen border border-primary border-solid rounded-2xl py-5 px-10' : 'max-h-0 overflow-hidden border border-primary border-solid  rounded-lg'}`}
+				style={{
+					maxHeight: filtersOpen ? '500px' : '100px',
+					overflow: 'hidden',
+					transition: 'max-height 0.7s ease'
+				}}
+			>
+				<div className='flex items-center justify-between p-2 bg-card'>
+					<h2 className='font-bold'>Фильтры</h2>
+					<button
+						className='text-primary'
+						onClick={() => setFiltersOpen(!filtersOpen)}
+					>
+						{filtersOpen ? <ChevronUp /> : <ChevronDown />}
+					</button>
+				</div>
+				{filtersOpen && (
+					<form
+						onSubmit={filterHandleSubmit(onSubmitFiltered)}
+						className='flex bg-card flex-col justify-center items-center w-fit'
+					>
+						<div>
+							<SelectInput
+								label='Тип группы'
+								options={Object.entries(TYPE).map(([type, value]) => ({
+									value: type as EType,
+									label: value
+								}))}
+								{...filterRegister('type')}
+							/>
+							<SelectInput
+								label='Курс'
+								options={Object.entries(COURSE).map(([course, value]) => ({
+									value: course as ECourse,
+									label: value
+								}))}
+								{...filterRegister('course')}
+							/>
+							<SelectInput
+								label='Статус'
+								options={Object.entries(GROUP_STATUS).map(
+									([status, value]) => ({
+										value: status as EStatus,
+										label: value
+									})
+								)}
+								{...filterRegister('status')}
+							/>
+							<div className='flex gap-x-2'>
+								<button
+									type='submit'
+									className='w-full p-2 transition-colors bg-primary rounded-lg hover:bg-primary/80'
+								>
+									Применить
+								</button>
+								<button
+									type='button'
+									onClick={resetFilters}
+									className='w-full p-2 transition-colors bg-secondary rounded-lg hover:bg-secondary/80'
+								>
+									Сбросить
+								</button>
+							</div>
 						</div>
-					</div>
-				</form>
+					</form>
+				)}
 			</div>
 		</div>
 	)

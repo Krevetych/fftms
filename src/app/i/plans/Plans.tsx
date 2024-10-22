@@ -1,7 +1,16 @@
 'use client'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Pencil, Plus, Trash, Upload, X } from 'lucide-react'
+import { AxiosError } from 'axios'
+import {
+	ChevronDown,
+	ChevronUp,
+	Pencil,
+	Plus,
+	Trash,
+	Upload,
+	X
+} from 'lucide-react'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -12,7 +21,7 @@ import SelectInput from '@/components/SelectInput'
 
 import { PLAN_STATUS, RATE } from '@/constants/table.constants'
 
-import { EStatus } from '@/types/group.types'
+import { EStatus, IGroup } from '@/types/group.types'
 import {
 	ERate,
 	IPlan,
@@ -60,6 +69,8 @@ export function Plans() {
 	const [actionType, setActionType] = useState<
 		'create' | 'edit' | 'delete' | null
 	>(null)
+	const [searchTerm, setSearchTerm] = useState<string>('')
+	const [filtersOpen, setFiltersOpen] = useState(false)
 
 	const queryClient = useQueryClient()
 
@@ -104,8 +115,11 @@ export function Plans() {
 			queryClient.invalidateQueries({ queryKey: ['plans'] })
 			setImportModal(false)
 		},
-		onError: () => {
-			toast.error('Произошла ошибка при импорте')
+		onError: (error: AxiosError) => {
+			const errorMessage = (error.response?.data as { message: string })
+				?.message
+
+			toast.error(`${errorMessage}. Проверьте файл`)
 		}
 	})
 
@@ -206,23 +220,39 @@ export function Plans() {
 				? []
 				: data
 
+	const filteredPlans = mapData?.filter((plan: IPlan) =>
+		plan.teacher.fio.toLowerCase().includes(searchTerm.toLowerCase())
+	)
+
 	return (
-		<div className='flex justify-between'>
-			<div className='w-2/3'>
-				<div className='flex items-center gap-2'>
-					<div
-						className='flex items-center gap-2 p-3 bg-primary w-fit rounded-lg transition-colors cursor-pointer hover:bg-primary/80'
-						onClick={() => handleModal('create')}
-					>
-						<Plus />
-						<p>Создать</p>
+		<div className='flex justify-between overflow-y-hidden'>
+			<div className='w-full'>
+				<div className='flex items-center justify-between'>
+					<div className='flex gap-x-2'>
+						<div
+							className='flex items-center gap-2 p-3 bg-primary w-fit rounded-lg transition-colors cursor-pointer hover:bg-primary/80'
+							onClick={() => handleModal('create')}
+						>
+							<Plus />
+							<p>Создать</p>
+						</div>
+						<div
+							className='flex items-center gap-2 p-3 border borde-solid border-primary w-fit rounded-lg transition-colors cursor-pointer hover:bg-primary'
+							onClick={handleImportModal}
+						>
+							<Upload />
+							<p>Импортировать</p>
+						</div>
 					</div>
-					<div
-						className='flex items-center gap-2 p-3 border borde-solid border-primary w-fit rounded-lg transition-colors cursor-pointer hover:bg-primary'
-						onClick={handleImportModal}
-					>
-						<Upload />
-						<p>Импортировать</p>
+					<div className='flex gap-x-2 mb-4'>
+						<input
+							type='text'
+							placeholder='Поиск по ФИО'
+							value={searchTerm}
+							onChange={e => setSearchTerm(e.target.value)}
+							className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-transparent border border-solid focus:border-primary text-ellipsis overflow-hidden whitespace-nowrap'
+							style={{ maxWidth: '100%', overflow: 'hidden' }}
+						/>
 					</div>
 				</div>
 
@@ -437,172 +467,196 @@ export function Plans() {
 
 				{isLoading ? (
 					<Loader />
-				) : mapData?.length !== 0 && mapData ? (
+				) : filteredPlans?.length !== 0 && filteredPlans ? (
 					<div className='overflow-x-auto'>
-						<table className='w-full mt-4 border-collapse '>
-							<thead className='whitespace-nowrap'>
-								<tr>
-									<th className='text-left p-2 border-b border-gray-700'>
-										Учебный год
-									</th>
-									<th className='text-left p-2 border-b border-gray-700'>
-										Тариф
-									</th>
-									<th className='text-left p-2 border-b border-gray-700'>
-										Макс. кол-во часов
-									</th>
-									<th className='text-left p-2 border-b border-gray-700'>
-										Отработанные часы
-									</th>
-									<th className='text-left p-2 border-b border-gray-700'>
-										Предмет
-									</th>
-									<th className='text-left p-2 border-b border-gray-700'>
-										Преподаватель
-									</th>
-									<th className='text-left p-2 border-b border-gray-700'>
-										Группа
-									</th>
-									<th className='text-left p-2 border-b border-gray-700'>
-										Статус
-									</th>
-									<th className='text-left p-2 border-b border-gray-700'>
-										Действия
-									</th>
-								</tr>
-							</thead>
-							<tbody>
-								{mapData.map(plan => (
-									<tr key={plan.id}>
-										<td className='p-2 border-b border-gray-700'>
-											{plan.year}
-										</td>
-										<td className='p-2 border-b border-gray-700'>
-											{RATE[plan.rate as ERate]}
-										</td>
-										<td className='p-2 border-b border-gray-700'>
-											{plan.maxHours}
-										</td>
-										<td className='p-2 border-b border-gray-700'>
-											{plan.worked}
-										</td>
-										<td className='p-2 border-b border-gray-700'>
-											{plan.Object.name}
-										</td>
-										<td className='p-2 border-b border-gray-700'>
-											{plan.teacher.fio}
-										</td>
-										<td className='p-2 border-b border-gray-700'>
-											{plan.group.name}
-										</td>
-										<td className='p-2 border-b border-gray-700'>
-											{plan.status === EStatus.ACTIVE ? (
-												<div className='h-5 w-10 rounded-full bg-primary'></div>
-											) : (
-												<div className='h-5 w-10 rounded-full bg-red-500'></div>
-											)}
-										</td>
-										<td className='p-2 border-b border-gray-700'>
-											<div className='flex gap-2'>
-												<Pencil
-													size={20}
-													onClick={() => handleModal('edit', plan)}
-													className='cursor-pointer text-secondary hover:text-secondary/80'
-												/>
-												<Trash
-													size={20}
-													onClick={() => handleModal('delete', plan)}
-													className='cursor-pointer text-red-500 hover:text-red-700'
-												/>
-											</div>
-										</td>
+						<div className='overflow-y-auto max-h-[75vh]'>
+							<table className='w-full mt-4 border-collapse '>
+								<thead className='whitespace-nowrap'>
+									<tr>
+										<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
+											Учебный год
+										</th>
+										<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
+											Тариф
+										</th>
+										<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
+											Макс. кол-во часов
+										</th>
+										<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
+											Отработанные часы
+										</th>
+										<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
+											Предмет
+										</th>
+										<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
+											Преподаватель
+										</th>
+										<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
+											Группа
+										</th>
+										<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
+											Статус
+										</th>
+										<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
+											Действия
+										</th>
 									</tr>
-								))}
-							</tbody>
-						</table>
+								</thead>
+								<tbody>
+									{filteredPlans.map(plan => (
+										<tr key={plan.id}>
+											<td className='p-2 border-b border-gray-700'>
+												{plan.year}
+											</td>
+											<td className='p-2 border-b border-gray-700'>
+												{RATE[plan.rate as ERate]}
+											</td>
+											<td className='p-2 border-b border-gray-700'>
+												{plan.maxHours}
+											</td>
+											<td className='p-2 border-b border-gray-700'>
+												{plan.worked}
+											</td>
+											<td className='p-2 border-b border-gray-700'>
+												{plan.Object.name}
+											</td>
+											<td className='p-2 border-b border-gray-700'>
+												{plan.teacher.fio}
+											</td>
+											<td className='p-2 border-b border-gray-700'>
+												{plan.group.name}
+											</td>
+											<td className='p-2 border-b border-gray-700'>
+												{plan.status === EStatus.ACTIVE ? (
+													<div className='h-5 w-10 rounded-full bg-primary'></div>
+												) : (
+													<div className='h-5 w-10 rounded-full bg-red-500'></div>
+												)}
+											</td>
+											<td className='p-2 border-b border-gray-700'>
+												<div className='flex gap-2'>
+													<Pencil
+														size={20}
+														onClick={() => handleModal('edit', plan)}
+														className='cursor-pointer text-secondary hover:text-secondary/80'
+													/>
+													<Trash
+														size={20}
+														onClick={() => handleModal('delete', plan)}
+														className='cursor-pointer text-red-500 hover:text-red-700'
+													/>
+												</div>
+											</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						</div>
 					</div>
 				) : (
 					<NotFoundData />
 				)}
 			</div>
-			<div className='w-1/3 flex items-center justify-center'>
-				<form
-					onSubmit={filterHandleSubmit(onSubmit)}
-					className='flex border bg-card border-primary rounded-2xl border-solid p-10 flex-col justify-center items-center w-fit'
-				>
-					<div>
-						<SelectInput
-							label='Год'
-							options={uniqueYears.map(year => ({ value: year, label: year }))}
-							{...filterRegister('year')}
-						/>
-						<SelectInput
-							label='Преподаватель'
-							options={
-								teachersData?.map(teacher => ({
-									value: teacher.id,
-									label: teacher.fio
-								})) || []
-							}
-							loading={isLoadingTeachers}
-							{...filterRegister('teacherId')}
-						/>
-						<SelectInput
-							label='Тариф'
-							options={Object.entries(RATE).map(([rate, value]) => ({
-								value: rate as ERate,
-								label: value
-							}))}
-							{...filterRegister('rate')}
-						/>
-						<SelectInput
-							label='Статус'
-							options={Object.entries(PLAN_STATUS).map(([status, value]) => ({
-								value: status as EStatus,
-								label: value
-							}))}
-							{...filterRegister('status')}
-						/>
+			<div
+				className={`fixed top-10 right-10 bg-card shadow-lg z-50 transition-all my-3 duration-700 ${filtersOpen ? 'max-h-screen border border-primary border-solid rounded-2xl py-5 px-10' : 'max-h-0 overflow-hidden border border-primary border-solid  rounded-lg'}`}
+				style={{
+					maxHeight: filtersOpen ? '500px' : '100px',
+					overflow: 'hidden',
+					transition: 'max-height 0.7s ease'
+				}}
+			>
+				<div className='flex items-center justify-between p-2 bg-card'>
+					<h2 className='font-bold'>Фильтры</h2>
+					<button
+						className='text-primary'
+						onClick={() => setFiltersOpen(!filtersOpen)}
+					>
+						{filtersOpen ? <ChevronUp /> : <ChevronDown />}
+					</button>
+				</div>
 
-						<SelectInput
-							label='Группа'
-							options={
-								groupData?.map(group => ({
-									value: group.id,
-									label: group.name
-								})) || []
-							}
-							loading={isLoadingGroups}
-							{...filterRegister('groupId')}
-						/>
-						<SelectInput
-							label='Предмет'
-							options={
-								objectsData?.map(obj => ({
-									value: obj.id,
-									label: obj.name
-								})) || []
-							}
-							loading={isLoadingObjects}
-							{...filterRegister('objectId')}
-						/>
-						<div className='flex gap-x-2'>
-							<button
-								type='submit'
-								className='w-full p-2 transition-colors bg-primary rounded-lg hover:bg-primary/80'
-							>
-								Применить
-							</button>
-							<button
-								type='button'
-								onClick={resetFilters}
-								className='w-full p-2 transition-colors bg-secondary rounded-lg hover:bg-secondary/80'
-							>
-								Сбросить
-							</button>
+				{filtersOpen && (
+					<form
+						onSubmit={filterHandleSubmit(onSubmit)}
+						className='flex bg-card flex-col justify-center items-center w-fit'
+					>
+						<div>
+							<SelectInput
+								label='Год'
+								options={uniqueYears.map(year => ({
+									value: year,
+									label: year
+								}))}
+								{...filterRegister('year')}
+							/>
+							<SelectInput
+								label='Преподаватель'
+								options={
+									teachersData?.map(teacher => ({
+										value: teacher.id,
+										label: teacher.fio
+									})) || []
+								}
+								loading={isLoadingTeachers}
+								{...filterRegister('teacherId')}
+							/>
+							<SelectInput
+								label='Тариф'
+								options={Object.entries(RATE).map(([rate, value]) => ({
+									value: rate as ERate,
+									label: value
+								}))}
+								{...filterRegister('rate')}
+							/>
+							<SelectInput
+								label='Статус'
+								options={Object.entries(PLAN_STATUS).map(([status, value]) => ({
+									value: status as EStatus,
+									label: value
+								}))}
+								{...filterRegister('status')}
+							/>
+
+							<SelectInput
+								label='Группа'
+								options={
+									groupData?.map(group => ({
+										value: group.id,
+										label: group.name
+									})) || []
+								}
+								loading={isLoadingGroups}
+								{...filterRegister('groupId')}
+							/>
+							<SelectInput
+								label='Предмет'
+								options={
+									objectsData?.map(obj => ({
+										value: obj.id,
+										label: obj.name
+									})) || []
+								}
+								loading={isLoadingObjects}
+								{...filterRegister('objectId')}
+							/>
+							<div className='flex gap-x-2'>
+								<button
+									type='submit'
+									className='w-full p-2 transition-colors bg-primary rounded-lg hover:bg-primary/80'
+								>
+									Применить
+								</button>
+								<button
+									type='button'
+									onClick={resetFilters}
+									className='w-full p-2 transition-colors bg-secondary rounded-lg hover:bg-secondary/80'
+								>
+									Сбросить
+								</button>
+							</div>
 						</div>
-					</div>
-				</form>
+					</form>
+				)}
 			</div>
 		</div>
 	)

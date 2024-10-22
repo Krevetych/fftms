@@ -10,7 +10,7 @@ import { Plans } from './Plans'
 export function PlanComponent() {
 	const { data } = useProfile()
 
-	const isAdmin = data?.isAdmin || false
+	const isAdmin = data?.isAdmin
 
 	return (
 		<>

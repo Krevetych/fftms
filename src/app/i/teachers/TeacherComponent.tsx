@@ -10,7 +10,7 @@ import { Teachers } from './Teacher'
 export function TeacherComponent() {
 	const { data } = useProfile()
 
-	const isAdmin = data?.isAdmin || false
+	const isAdmin = data?.isAdmin
 
 	return (
 		<>

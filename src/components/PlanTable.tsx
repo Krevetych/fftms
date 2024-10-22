@@ -64,15 +64,19 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 				>
 					<thead>
 						<tr>
-							<th className='text-left p-2 border-b border-gray-700'>
+							<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
 								Предмет
 							</th>
-							<th className='text-left p-2 border-b border-gray-700'>Группа</th>
-							<th className='text-left p-2 border-b border-gray-700'>Тип</th>
-							<th className='text-left p-2 border-b border-gray-700'>
+							<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
+								Группа
+							</th>
+							<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
+								Тип
+							</th>
+							<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
 								Остаток часов
 							</th>
-							<th className='text-left p-2 border-b border-gray-700'>
+							<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
 								Вычитанные часы
 							</th>
 						</tr>
