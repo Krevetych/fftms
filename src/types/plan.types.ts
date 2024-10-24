@@ -14,6 +14,15 @@ export enum ERate {
 	HOURLY = 'HOURLY'
 }
 
+export interface ISubjectForm {
+	year: string
+	rate: ERate
+	objectId: string
+	status: EStatus
+	teacherId: string
+	groupId: string
+}
+
 export interface IPlan {
 	id: string
 	year: string

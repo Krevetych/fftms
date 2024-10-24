@@ -1,54 +1,13 @@
 'use client'
 
-import { useMutation } from '@tanstack/react-query'
-import { AxiosError } from 'axios'
-import { log } from 'console'
-import { useRouter } from 'next/navigation'
-import { SubmitHandler, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
-
+import Input from '@/components/Input'
 import Loader from '@/components/Loader'
+import { Button } from '@/components/dashboard-layout/Button'
 
-import { IAuthForm } from '@/types/auth.types'
-
-import { PAGES } from '@/config/url.config'
-
-import { authService } from '@/services/auth.service'
+import { useLogin } from '@/hooks/useLogin'
 
 export function Login() {
-	const { register, handleSubmit, reset } = useForm<IAuthForm>({
-		mode: 'onChange'
-	})
-
-	const { push } = useRouter()
-
-	const { mutate, isPending } = useMutation({
-		mutationKey: ['login'],
-		mutationFn: (data: IAuthForm) => {
-			return authService.login(data)
-		},
-		onSuccess: () => {
-			toast.success('Вход выполнен успешно')
-			reset()
-			push(PAGES.HOME)
-		},
-		onError: (error: AxiosError) => {
-			const errorMessage = (error.response?.data as { message: string })
-				?.message
-
-			if (errorMessage === 'Invalid password') {
-				toast.error('Неверный логин или пароль')
-			} else if (errorMessage === 'User not found') {
-				toast.error('Пользователь не найден')
-			} else {
-				toast.error('Неизвестная ошибка')
-			}
-		}
-	})
-
-	const onSubmit: SubmitHandler<IAuthForm> = data => {
-		mutate(data)
-	}
+	const { handleSubmit, onSubmit, register, isPending } = useLogin()
 
 	return (
 		<div className='flex h-screen items-center justify-center'>
@@ -58,18 +17,16 @@ export function Login() {
 			>
 				<h1 className='text-2xl text-center font-black mb-10'>Вход</h1>
 				<div className='flex flex-col gap-y-4'>
-					<input
+					<Input
 						type='text'
-						className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
 						placeholder='Логин'
 						{...register('login', {
 							required: 'Login is required'
 						})}
 					/>
 
-					<input
+					<Input
 						type='password'
-						className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
 						placeholder='Пароль'
 						{...register('password', {
 							required: 'Password is required'
@@ -77,12 +34,12 @@ export function Login() {
 					/>
 				</div>
 
-				<button
+				<Button
 					type='submit'
-					className='text-text p-4 mt-5 bg-primary rounded-lg text-xl font-semibold transition-colors hover:bg-primary/80'
+					extra='text-text p-4 mt-5 bg-primary rounded-lg text-xl font-semibold transition-colors hover:bg-primary/80'
 				>
 					{isPending ? <Loader /> : <p>Войти</p>}
-				</button>
+				</Button>
 			</form>
 		</div>
 	)

@@ -26,6 +26,21 @@ export enum ETerm {
 	SECOND = 'SECOND'
 }
 
+export interface IForm {
+	month: EMonth
+	monthHalf: EMonthHalf
+	teacherId: string
+	type: EType
+	groupId: string
+}
+
+export interface ITermForm {
+	term: ETerm
+	teacherId: string
+	type: EType
+	groupId: string
+}
+
 export interface ISubject {
 	id: string
 	month: EMonth

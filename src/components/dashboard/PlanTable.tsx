@@ -1,4 +1,4 @@
-import { Check } from 'lucide-react'
+import { Ban } from 'lucide-react'
 import { forwardRef } from 'react'
 import { UseFormGetValues, UseFormRegister } from 'react-hook-form'
 
@@ -12,9 +12,9 @@ import {
 
 import { EType } from '@/types/group.types'
 import { ERate, IFilteredPlan } from '@/types/plan.types'
-import { EMonth, EMonthHalf, ETerm, ISubject } from '@/types/subject.types'
+import { EMonth, EMonthHalf, ETerm } from '@/types/subject.types'
 
-import { ISubjectForm } from '@/app/i/Dashboard'
+import { ISubjectForm } from '@/hooks/dashboard/useFiltered'
 
 interface PlanTableProps {
 	plans: IFilteredPlan[]
@@ -35,19 +35,7 @@ interface PlanTableProps {
 }
 
 const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
-	(
-		{
-			plans,
-			editingSubject,
-			handleHoursClick,
-			handleBlur,
-			rate,
-			register,
-			getValues,
-			handleCreateSubject
-		},
-		ref
-	) => {
+	({ plans, handleBlur, rate, register, getValues }, ref) => {
 		const totalHours: number = plans.reduce((total: number, plan) => {
 			const subjectHours =
 				rate === ERate.HOURLY
@@ -160,17 +148,21 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 											className='p-2 border-b border-gray-700'
 										>
 											<div className='flex items-center gap-x-3'>
-												<input
-													type='text'
-													{...register(`subjects.${subject.id}.hours`, {
-														required: true
-													})}
-													className='p-3 w-full rounded-lg bg-card font-semibold placeholder:font-normal outline-none border-none'
-													defaultValue={subject.hours}
-													onBlur={e =>
-														handleBlur(subject.id, plan.id, e.target.value)
-													}
-												/>
+												{plan.maxHours - plan.worked === 0 ? (
+													<Ban className='text-gray-600 ml-3' />
+												) : (
+													<input
+														type='text'
+														{...register(`subjects.${subject.id}.hours`, {
+															required: true
+														})}
+														className='p-3 w-full rounded-lg bg-card font-semibold placeholder:font-normal outline-none border-none'
+														defaultValue={subject.hours}
+														onBlur={e =>
+															handleBlur(subject.id, plan.id, e.target.value)
+														}
+													/>
+												)}
 											</div>
 										</td>
 									))
@@ -181,30 +173,42 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 											className='p-2 border-b border-gray-700'
 										>
 											<div className='flex items-center gap-x-3'>
-												<input
-													type='text'
-													{...register(`subjects.${subject.id}.hours`, {
-														required: true
-													})}
-													className='p-3 w-full rounded-lg bg-card font-semibold placeholder:font-normal outline-none border-none'
-													defaultValue={subject.hours}
-													onBlur={e =>
-														handleBlur(subject.id, plan.id, e.target.value)
-													}
-												/>
+												{plan.maxHours - plan.worked === 0 ? (
+													<Ban className='text-gray-600 ml-3' />
+												) : (
+													<input
+														type='text'
+														{...register(`subjects.${subject.id}.hours`, {
+															required: true
+														})}
+														className='p-3 w-full rounded-lg bg-card font-semibold placeholder:font-normal outline-none border-none'
+														defaultValue={subject.hours}
+														onBlur={e =>
+															handleBlur(subject.id, plan.id, e.target.value)
+														}
+													/>
+												)}
 											</div>
 										</td>
 									))
 								) : (
 									<td className='p-2 border-b border-gray-700'>
 										<div className='flex items-center gap-x-3'>
-											<input
-												type='text'
-												{...register(`subjects.new.hours`, { required: true })}
-												placeholder='Введите часы'
-												className='p-3 w-full rounded-lg bg-card font-semiboldplaceholder:font-normal outline-none border-none'
-												onBlur={e => handleBlur('new', plan.id, e.target.value)}
-											/>
+											{plan.maxHours - plan.worked === 0 ? (
+												<Ban className='text-gray-600 ml-3' />
+											) : (
+												<input
+													type='text'
+													{...register(`subjects.new.hours`, {
+														required: true
+													})}
+													placeholder='Введите часы'
+													className='p-3 w-full rounded-lg bg-card font-semibold placeholder:font-normal outline-none border-none'
+													onBlur={e =>
+														handleBlur('new', plan.id, e.target.value)
+													}
+												/>
+											)}
 										</div>
 									</td>
 								)}

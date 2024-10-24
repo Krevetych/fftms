@@ -1,3 +1,5 @@
+import { type } from 'os'
+
 export enum EType {
 	NPO = 'NPO',
 	BUDGET = 'BUDGET',
@@ -15,6 +17,12 @@ export enum ECourse {
 	THIRD = 'THIRD',
 	FOURTH = 'FOURTH',
 	INACTIVE = 'INACTIVE'
+}
+
+export interface ISubjectForm {
+	type: EType
+	course: ECourse
+	status: EStatus
 }
 
 export interface IGroup {

@@ -14,7 +14,7 @@ const SelectInput = forwardRef<HTMLSelectElement, SelectInputProps>(
 				<select
 					ref={ref}
 					{...rest}
-					className='py-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
+					className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
 					disabled={loading || options.length === 0}
 				>
 					<option value=''>{loading ? 'Загрузка...' : label}</option>
