@@ -55,7 +55,7 @@ export function Plans() {
 	})
 
 	const [modal, setModal] = useState(false)
-	const [filters, setFilters] = useState<IPlans>()
+	const [filters, setFilters] = useState<IPlans | undefined>()
 	const [importModal, setImportModal] = useState(false)
 	const [selectedPlan, setSelectedPlan] = useState<any | null>(null)
 	const [actionType, setActionType] = useState<
@@ -86,6 +86,14 @@ export function Plans() {
 			setActionType(null)
 			queryClient.invalidateQueries({ queryKey: ['plans'] })
 			setModal(false)
+		},
+		onError: (error: AxiosError) => {
+			const errorMessage = (error.response?.data as { message: string })
+				?.message
+
+			if (errorMessage === 'Plan already exists') {
+				toast.error('План уже существует')
+			}
 		}
 	})
 
@@ -205,6 +213,7 @@ export function Plans() {
 
 	const resetFilters = () => {
 		filterReset()
+		setFilters(undefined)
 	}
 
 	const uniqueYears = Array.from(

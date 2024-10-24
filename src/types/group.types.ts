@@ -29,7 +29,6 @@ export interface IGroupCreate {
 	name: string
 	type: EType
 	course: ECourse
-	status: EStatus
 }
 
 export interface IFilteredGroup {

@@ -60,7 +60,7 @@ export function Subject({ rate }: { rate: ERate }) {
 
 	const [modal, setModal] = useState(false)
 	const [filters, setFilters] = useState<
-		IFilteredSubject | IFilteredSubjectTerm
+		IFilteredSubject | IFilteredSubjectTerm | undefined
 	>()
 	const [selectedSubject, setSelectedSubject] = useState<any | null>(null)
 	const [searchTerm, setSearchTerm] = useState<string>('')
@@ -154,6 +154,7 @@ export function Subject({ rate }: { rate: ERate }) {
 
 	const resetFilters = () => {
 		reset()
+		setFilters(undefined)
 	}
 
 	const filtererSubjects = mapData?.filter((subject: ISubject | ISubjectTerm) =>

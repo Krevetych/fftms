@@ -46,7 +46,7 @@ export function Dashboard() {
 		})
 
 	const queryClient = useQueryClient()
-	const [filters, setFilters] = useState<IFilters>()
+	const [filters, setFilters] = useState<IFilters | undefined>()
 	const [editingSubject, setEditingSubject] = useState<string | null>(null)
 	const [searchTerm, setSearchTerm] = useState<string>('')
 
@@ -155,7 +155,8 @@ export function Dashboard() {
 		planId: string,
 		term: ETerm,
 		month: EMonth,
-		monthHalf: EMonthHalf
+		monthHalf: EMonthHalf,
+		hours: string
 	) => {
 		const subjectData = getValues(`subjects.${subjectId}.hours`)
 		const plan = await planService.getByid(planId)
@@ -166,14 +167,14 @@ export function Dashboard() {
 				subjectId: subjectId !== 'new' ? subjectId : undefined,
 				month,
 				monthHalf,
-				hours: Number(subjectData),
+				hours: Number(hours),
 				planId
 			})
 		} else {
 			await mutationTerm.mutateAsync({
 				subjectId: subjectId !== 'new' ? subjectId : undefined,
 				term,
-				hours: Number(subjectData),
+				hours: Number(hours),
 				planId
 			})
 		}
@@ -183,19 +184,21 @@ export function Dashboard() {
 		setEditingSubject(subjectId)
 	}
 
-	const handleBlur = async (subjectId: string, planId: string) => {
+	const handleBlur = async (subjectId: string, planId: string, hours: string) => {
 		await handleCreateSubject(
 			subjectId,
 			planId,
 			getValues('term') as ETerm,
 			getValues('month') as EMonth,
-			getValues('monthHalf') as EMonthHalf
+			getValues('monthHalf') as EMonthHalf,
+			hours
 		)
 		setEditingSubject(null)
 	}
 
 	const resetFilters = () => {
 		reset()
+		setFilters(undefined)
 	}
 
 	const filteredPlans = fPlansData?.filter((plan: IPlan) =>

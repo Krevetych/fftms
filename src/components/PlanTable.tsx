@@ -2,7 +2,13 @@ import { Check } from 'lucide-react'
 import { forwardRef } from 'react'
 import { UseFormGetValues, UseFormRegister } from 'react-hook-form'
 
-import { MONTH, MONTH_HALF, RATE, TERM, TYPE } from '@/constants/table.constants'
+import {
+	MONTH,
+	MONTH_HALF,
+	RATE,
+	TERM,
+	TYPE
+} from '@/constants/table.constants'
 
 import { EType } from '@/types/group.types'
 import { ERate, IFilteredPlan } from '@/types/plan.types'
@@ -14,7 +20,7 @@ interface PlanTableProps {
 	plans: IFilteredPlan[]
 	editingSubject: string | null
 	handleHoursClick: (subjectId: string) => void
-	handleBlur: (subjectId: string, planId: string) => void
+	handleBlur: (subjectId: string, planId: string, hours: string) => void
 	register: UseFormRegister<ISubjectForm>
 	getValues: UseFormGetValues<ISubjectForm>
 	rate: ERate
@@ -23,7 +29,8 @@ interface PlanTableProps {
 		planId: string,
 		term: ETerm,
 		month: EMonth,
-		monthHalf: EMonthHalf
+		monthHalf: EMonthHalf,
+		hours: string
 	) => Promise<void>
 }
 
@@ -45,13 +52,13 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 			const subjectHours =
 				rate === ERate.HOURLY
 					? plan?.Subject?.reduce(
-						(sum: number, subject) => sum + subject.hours,
-						0
-					) || 0
+							(sum: number, subject) => sum + subject.hours,
+							0
+						) || 0
 					: plan?.SubjectTerm?.reduce(
-						(sum: number, subject) => sum + subject.hours,
-						0
-					) || 0
+							(sum: number, subject) => sum + subject.hours,
+							0
+						) || 0
 
 			return total + subjectHours
 		}, 0)
@@ -73,7 +80,7 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 							<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
 								Тариф
 							</th>
-							{rate === ERate.HOURLY ?
+							{rate === ERate.HOURLY ? (
 								<>
 									<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
 										Месяц
@@ -82,9 +89,11 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 										Половина месяца
 									</th>
 								</>
-								: <th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
+							) : (
+								<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
 									Семестр
-								</th>}
+								</th>
+							)}
 							<th className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'>
 								Предмет
 							</th>
@@ -104,17 +113,20 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 					</thead>
 					<tbody>
 						{plans.map(plan => (
-							<tr key={plan.id}>
-								<td className='p-2 border-b border-gray-700'>
-									{plan.year}
-								</td>
+							<tr
+								key={plan.id}
+								className={
+									plan.maxHours - plan.worked === 0 ? 'text-gray-600' : ''
+								}
+							>
+								<td className='p-2 border-b border-gray-700'>{plan.year}</td>
 								<td className='p-2 border-b border-gray-700'>
 									{plan.teacher.fio}
 								</td>
 								<td className='p-2 border-b border-gray-700'>
 									{RATE[plan.rate]}
 								</td>
-								{rate === ERate.HOURLY ?
+								{rate === ERate.HOURLY ? (
 									<>
 										<td className='p-2 border-b border-gray-700'>
 											{MONTH[getValues('month') as EMonth]}
@@ -123,9 +135,11 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 											{MONTH_HALF[getValues('monthHalf') as EMonthHalf]}
 										</td>
 									</>
-									: <td className='p-2 border-b border-gray-700'>
+								) : (
+									<td className='p-2 border-b border-gray-700'>
 										{TERM[getValues('term') as ETerm]}
-									</td>}
+									</td>
+								)}
 								<td className='p-2 border-b border-gray-700'>
 									{plan.Object.name}
 								</td>
@@ -146,35 +160,17 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 											className='p-2 border-b border-gray-700'
 										>
 											<div className='flex items-center gap-x-3'>
-												{editingSubject === subject.id ? (
-													<>
-														<input
-															type='text'
-															{...register(`subjects.${subject.id}.hours`, {
-																required: true
-															})}
-															className='p-3 w-1/2 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal outline-none border-none'
-															defaultValue={subject.hours}
-															onBlur={() => handleBlur(subject.id, plan.id)}
-														/>
-														<Check
-															onClick={async () =>
-																await handleCreateSubject(
-																	subject.id,
-																	plan.id,
-																	getValues('term') as ETerm,
-																	getValues('month') as EMonth,
-																	getValues('monthHalf') as EMonthHalf
-																)
-															}
-															className='cursor-pointer text-primary hover:text-primary/80'
-														/>
-													</>
-												) : (
-													<span onClick={() => handleHoursClick(subject.id)}>
-														{subject.hours}
-													</span>
-												)}
+												<input
+													type='text'
+													{...register(`subjects.${subject.id}.hours`, {
+														required: true
+													})}
+													className='p-3 w-full rounded-lg bg-card font-semibold placeholder:font-normal outline-none border-none'
+													defaultValue={subject.hours}
+													onBlur={e =>
+														handleBlur(subject.id, plan.id, e.target.value)
+													}
+												/>
 											</div>
 										</td>
 									))
@@ -185,35 +181,17 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 											className='p-2 border-b border-gray-700'
 										>
 											<div className='flex items-center gap-x-3'>
-												{editingSubject === subject.id ? (
-													<>
-														<input
-															type='text'
-															{...register(`subjects.${subject.id}.hours`, {
-																required: true
-															})}
-															className='p-3 w-1/2 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal outline-none border-none'
-															defaultValue={subject.hours}
-															onBlur={() => handleBlur(subject.id, plan.id)}
-														/>
-														<Check
-															onClick={async () =>
-																await handleCreateSubject(
-																	subject.id,
-																	plan.id,
-																	getValues('term') as ETerm,
-																	getValues('month') as EMonth,
-																	getValues('monthHalf') as EMonthHalf
-																)
-															}
-															className='cursor-pointer text-primary hover:text-primary/80'
-														/>
-													</>
-												) : (
-													<span onClick={() => handleHoursClick(subject.id)}>
-														{subject.hours}
-													</span>
-												)}
+												<input
+													type='text'
+													{...register(`subjects.${subject.id}.hours`, {
+														required: true
+													})}
+													className='p-3 w-full rounded-lg bg-card font-semibold placeholder:font-normal outline-none border-none'
+													defaultValue={subject.hours}
+													onBlur={e =>
+														handleBlur(subject.id, plan.id, e.target.value)
+													}
+												/>
 											</div>
 										</td>
 									))
@@ -224,19 +202,8 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 												type='text'
 												{...register(`subjects.new.hours`, { required: true })}
 												placeholder='Введите часы'
-												className='p-3 w-1/2 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal outline-none border-none'
-											/>
-											<Check
-												onClick={async () =>
-													await handleCreateSubject(
-														'new',
-														plan.id,
-														getValues('term') as ETerm,
-														getValues('month') as EMonth,
-														getValues('monthHalf') as EMonthHalf
-													)
-												}
-												className='cursor-pointer text-primary hover:text-primary/80'
+												className='p-3 w-full rounded-lg bg-card font-semiboldplaceholder:font-normal outline-none border-none'
+												onBlur={e => handleBlur('new', plan.id, e.target.value)}
 											/>
 										</div>
 									</td>
@@ -255,5 +222,7 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 		)
 	}
 )
+
+PlanTable.displayName = 'PlanTable'
 
 export default PlanTable

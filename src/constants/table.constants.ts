@@ -140,7 +140,7 @@ export const GROUP = [
 export const TYPE: Record<EType, string> = {
 	[EType.NPO]: 'НПО',
 	[EType.BUDGET]: 'Бюджетная',
-	[EType.NON_BUDGET]: 'Небюджетная'
+	[EType.NON_BUDGET]: 'Внебюджетная'
 }
 
 export const COURSE: Record<ECourse, string> = {

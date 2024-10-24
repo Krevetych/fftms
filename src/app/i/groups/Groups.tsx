@@ -2,23 +2,10 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
-import { table } from 'console'
-import {
-	ChevronDown,
-	ChevronUp,
-	Loader,
-	Pencil,
-	Plus,
-	Trash,
-	Upload,
-	X
-} from 'lucide-react'
-import { type } from 'os'
-import { title } from 'process'
+import { Loader, Pencil, Plus, Trash, Upload, X } from 'lucide-react'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import style from 'styled-jsx/style'
 
 import NotFoundData from '@/components/NotFoundData'
 import SelectInput from '@/components/SelectInput'
@@ -34,7 +21,6 @@ import {
 	IGroupCreate,
 	IGroupUpdate
 } from '@/types/group.types'
-import { ITeacher } from '@/types/teacher.types'
 
 import { groupService } from '@/services/group.service'
 
@@ -58,18 +44,17 @@ export function Groups() {
 	})
 
 	const [modal, setModal] = useState(false)
-	const [filters, setFilters] = useState<IFilteredGroup>()
+	const [filters, setFilters] = useState<IFilteredGroup | undefined>()
 	const [importModal, setImportModal] = useState(false)
 	const [selectedGroup, setSelectedGroup] = useState<any | null>(null)
 	const [actionType, setActionType] = useState<
 		'create' | 'edit' | 'delete' | null
 	>(null)
 	const [searchTerm, setSearchTerm] = useState<string>('')
-	const [filtersOpen, setFiltersOpen] = useState(false)
 
 	const queryClient = useQueryClient()
 
-	const { data: fGroupsData, isLoading: isLoadingFGroups } = useQuery({
+	const { data: fGroupsData } = useQuery({
 		queryKey: ['filtered-groups', filters],
 		queryFn: () => (filters ? groupService.getFiltered(filters) : []),
 		enabled: !!filters
@@ -157,7 +142,6 @@ export function Groups() {
 			setValue('name', group.name)
 			setValue('type', group.type)
 			setValue('course', group.course)
-			setValue('status', group.status)
 		} else if (type === 'delete' && group) {
 			setSelectedGroup(group)
 		} else {
@@ -205,6 +189,7 @@ export function Groups() {
 
 	const resetFilters = () => {
 		filterReset()
+		setFilters(undefined)
 	}
 
 	const filteredGroups = mapData?.filter((group: IGroup) =>
@@ -362,27 +347,6 @@ export function Groups() {
 																value={type}
 															>
 																{TYPE[value]}
-															</option>
-														))}
-													</select>
-
-													<select
-														{...register('status', { required: true })}
-														className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
-													>
-														<option
-															value=''
-															disabled
-															selected
-														>
-															Выберите статус
-														</option>
-														{Object.entries(EStatus).map(([status, value]) => (
-															<option
-																key={status}
-																value={status}
-															>
-																{GROUP_STATUS[value]}
 															</option>
 														))}
 													</select>

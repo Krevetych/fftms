@@ -11,7 +11,6 @@ class GroupService {
 	private URL = '/group'
 
 	async create(data: IGroupCreate) {
-		console.log('Service: ', data)
 		const res = await axiosWithAuth.post<IGroup>(`${this.URL}/create`, data)
 
 		return res.data
