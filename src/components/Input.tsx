@@ -1,4 +1,5 @@
-import React, { Ref, forwardRef } from 'react'
+import { Eye, EyeClosed, EyeOff } from 'lucide-react'
+import React, { forwardRef } from 'react'
 
 interface IInputProps {
 	type: string
@@ -6,21 +7,53 @@ interface IInputProps {
 	onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
 	accept?: string
 	defaultValue?: string
+	togglePassword?: () => void
+	extra?: string
+	passwordVisible?: boolean
 }
 
 const Input = forwardRef<HTMLInputElement, IInputProps>(
-	({ type, placeholder, onChange, accept, defaultValue, ...rest }, ref) => {
+	(
+		{
+			type,
+			placeholder,
+			onChange,
+			accept,
+			defaultValue,
+			togglePassword,
+			passwordVisible,
+			extra,
+			...rest
+		},
+		ref
+	) => {
 		return (
-			<input
-				type={type}
-				className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
-				onChange={onChange}
-				placeholder={placeholder}
-				accept={accept}
-				defaultValue={defaultValue}
-				ref={ref}
-				{...rest}
-			/>
+			<div className={extra}>
+				<input
+					type={type}
+					className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
+					onChange={onChange}
+					placeholder={placeholder}
+					accept={accept}
+					defaultValue={defaultValue}
+					ref={ref}
+					{...rest}
+				/>
+				{togglePassword && (
+					<span
+						onClick={togglePassword}
+						style={{
+							position: 'absolute',
+							right: '10px',
+							top: '50%',
+							transform: 'translateY(-50%)',
+							cursor: 'pointer'
+						}}
+					>
+						{passwordVisible ? <Eye size={20} /> : <EyeClosed size={20} />}
+					</span>
+				)}
+			</div>
 		)
 	}
 )

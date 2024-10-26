@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+
 import Input from '@/components/Input'
 import Loader from '@/components/Loader'
 import { Button } from '@/components/dashboard-layout/Button'
@@ -7,7 +9,13 @@ import { Button } from '@/components/dashboard-layout/Button'
 import { useLogin } from '@/hooks/useLogin'
 
 export function Login() {
+	const [passwordVisible, setPasswordVisible] = useState(false)
+
 	const { handleSubmit, onSubmit, register, isPending } = useLogin()
+
+	const togglePasswordVisible = () => {
+		setPasswordVisible(!passwordVisible)
+	}
 
 	return (
 		<div className='flex h-screen items-center justify-center'>
@@ -26,7 +34,10 @@ export function Login() {
 					/>
 
 					<Input
-						type='password'
+						type={passwordVisible ? 'text' : 'password'}
+						togglePassword={togglePasswordVisible}
+						extra='relative inline-block'
+						passwordVisible={passwordVisible}
 						placeholder='Пароль'
 						{...register('password', {
 							required: 'Password is required'

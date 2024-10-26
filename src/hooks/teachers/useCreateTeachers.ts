@@ -15,7 +15,7 @@ export function useCreateTeachers() {
 		'create' | 'edit' | 'delete' | null
 	>(null)
 
-	const { register, handleSubmit, setValue } = useForm<ITeacherCreate>({
+	const { register, handleSubmit, setValue, reset } = useForm<ITeacherCreate>({
 		mode: 'onChange'
 	})
 
@@ -31,6 +31,7 @@ export function useCreateTeachers() {
 		},
 		onSuccess: () => {
 			toast.success(`Запись ${actionType === 'edit' ? 'обновлена' : 'создана'}`)
+			reset()
 			setSelectedTeacher(null)
 			setActionType(null)
 			queryClient.invalidateQueries({ queryKey: ['teachers'] })

@@ -24,7 +24,7 @@ interface PlanForm {
 }
 
 export function Unload({ setModal }: { setModal: (value: boolean) => void }) {
-	const { register, handleSubmit, watch } = useForm<PlanForm>({
+	const { register, handleSubmit, watch, reset } = useForm<PlanForm>({
 		mode: 'onChange'
 	})
 	const [filters, setFilters] = useState<IUnloadPlans>()
@@ -42,7 +42,7 @@ export function Unload({ setModal }: { setModal: (value: boolean) => void }) {
 
 	if (isSuccess) {
 		toast.success('Данные выгружены')
-
+		reset()
 		setModal(false)
 	}
 

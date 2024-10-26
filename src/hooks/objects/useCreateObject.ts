@@ -15,7 +15,7 @@ export function useCreateObject() {
 		'create' | 'edit' | 'delete' | null
 	>(null)
 
-	const { register, handleSubmit, setValue } = useForm<IObjectCreate>({
+	const { register, handleSubmit, setValue, reset } = useForm<IObjectCreate>({
 		mode: 'onChange'
 	})
 
@@ -31,6 +31,7 @@ export function useCreateObject() {
 		},
 		onSuccess: () => {
 			toast.success(`Запись ${actionType === 'edit' ? 'обновлена' : 'создана'}`)
+			reset()
 			setSelectedObject(null)
 			setActionType(null)
 			queryClient.invalidateQueries({ queryKey: ['objects'] })

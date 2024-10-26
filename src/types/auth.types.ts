@@ -15,6 +15,12 @@ export interface IUserCreate {
 	isAdmin?: boolean
 }
 
+export interface IUserPassword {
+	oldPassword: string
+	newPassword: string
+	confirmPassword: string
+}
+
 export interface ILoginResponse {
 	accessToken: string
 	user: IUser

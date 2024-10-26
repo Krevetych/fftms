@@ -1,4 +1,4 @@
-import { IUser, IUserCreate } from '@/types/auth.types'
+import { IUser, IUserCreate, IUserPassword } from '@/types/auth.types'
 
 import { axiosWithAuth } from '@/api/interceptors'
 
@@ -17,6 +17,15 @@ class UserService {
 			data
 		)
 
+		return res.data
+	}
+
+	async updatePassword(data: IUserPassword) {
+		const res = await axiosWithAuth.put<IUser>(
+			`${this.URL}/update_password`,
+			data
+		)
+		console.log(data)
 		return res.data
 	}
 
