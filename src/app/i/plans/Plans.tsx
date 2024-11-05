@@ -12,10 +12,7 @@ import { PlansFilteredForm } from '@/components/plans/PlansFilteredForm'
 import { PlansImportModal } from '@/components/plans/PlansImportModal'
 import { PlansTable } from '@/components/plans/PlansTable'
 
-import { PLAN_STATUS, RATE } from '@/constants/table.constants'
-
-import { EStatus } from '@/types/group.types'
-import { ERate, IPlan } from '@/types/plan.types'
+import { IPlan } from '@/types/plan.types'
 
 import { useGetGroups } from '@/hooks/groups/useGetGroups'
 import { useGetObjects } from '@/hooks/objects/useGetObjects'

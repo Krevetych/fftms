@@ -4,7 +4,6 @@ import { useState } from 'react'
 
 import Loader from '@/components/Loader'
 import NotFoundData from '@/components/NotFoundData'
-import SelectInput from '@/components/SelectInput'
 import { Actions } from '@/components/dashboard/Actions'
 import { FilteredForm } from '@/components/dashboard/FilteredForm'
 import PlanTable from '@/components/dashboard/PlanTable'

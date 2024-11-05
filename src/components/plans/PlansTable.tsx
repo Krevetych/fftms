@@ -51,56 +51,74 @@ interface IProps {
 }
 
 export function PlansTable({ handleModal, filteredPlans }: IProps) {
+	const totalHours: number = filteredPlans
+		.map(plan => plan.maxHours || 0)
+		.reduce((total, hours) => total + hours, 0)
+
 	return (
-		<table className='w-full mt-4 border-collapse '>
-			<thead className='whitespace-nowrap'>
-				<tr>
-					{MENU.map(menu => (
-						<th
-							className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'
-							key={menu.id}
-						>
-							{menu.title}
-						</th>
-					))}
-				</tr>
-			</thead>
-			<tbody>
-				{filteredPlans.map(plan => (
-					<tr key={plan.id}>
-						<td className='p-2 border-b border-gray-700'>{plan.year}</td>
-						<td className='p-2 border-b border-gray-700'>
-							{RATE[plan.rate as ERate]}
-						</td>
-						<td className='p-2 border-b border-gray-700'>{plan.maxHours}</td>
-						<td className='p-2 border-b border-gray-700'>{plan.worked}</td>
-						<td className='p-2 border-b border-gray-700'>{plan.Object.name}</td>
-						<td className='p-2 border-b border-gray-700'>{plan.teacher.fio}</td>
-						<td className='p-2 border-b border-gray-700'>{plan.group.name}</td>
-						<td className='p-2 border-b border-gray-700'>
-							{plan.status === EStatus.ACTIVE ? (
-								<div className='h-5 w-10 rounded-full bg-primary'></div>
-							) : (
-								<div className='h-5 w-10 rounded-full bg-red-500'></div>
-							)}
-						</td>
-						<td className='p-2 border-b border-gray-700'>
-							<div className='flex gap-2'>
-								<Pencil
-									size={20}
-									onClick={() => handleModal('edit', plan)}
-									className='cursor-pointer text-secondary hover:text-secondary/80'
-								/>
-								<Trash
-									size={20}
-									onClick={() => handleModal('delete', plan)}
-									className='cursor-pointer text-red-500 hover:text-red-700'
-								/>
-							</div>
-						</td>
+		<>
+			<table className='w-full mt-4 border-collapse '>
+				<thead className='whitespace-nowrap'>
+					<tr>
+						{MENU.map(menu => (
+							<th
+								className='text-left p-2 border-b border-gray-700 sticky top-0 bg-card z-10'
+								key={menu.id}
+							>
+								{menu.title}
+							</th>
+						))}
 					</tr>
-				))}
-			</tbody>
-		</table>
+				</thead>
+				<tbody>
+					{filteredPlans.map(plan => (
+						<tr key={plan.id}>
+							<td className='p-2 border-b border-gray-700'>{plan.year}</td>
+							<td className='p-2 border-b border-gray-700'>
+								{RATE[plan.rate as ERate]}
+							</td>
+							<td className='p-2 border-b border-gray-700'>{plan.maxHours}</td>
+							<td className='p-2 border-b border-gray-700'>{plan.worked}</td>
+							<td className='p-2 border-b border-gray-700'>
+								{plan.Object.name}
+							</td>
+							<td className='p-2 border-b border-gray-700'>
+								{plan.teacher.fio}
+							</td>
+							<td className='p-2 border-b border-gray-700'>
+								{plan.group.name}
+							</td>
+							<td className='p-2 border-b border-gray-700'>
+								{plan.status === EStatus.ACTIVE ? (
+									<div className='h-5 w-10 rounded-full bg-primary'></div>
+								) : (
+									<div className='h-5 w-10 rounded-full bg-red-500'></div>
+								)}
+							</td>
+							<td className='p-2 border-b border-gray-700'>
+								<div className='flex gap-2'>
+									<Pencil
+										size={20}
+										onClick={() => handleModal('edit', plan)}
+										className='cursor-pointer text-secondary hover:text-secondary/80'
+									/>
+									<Trash
+										size={20}
+										onClick={() => handleModal('delete', plan)}
+										className='cursor-pointer text-red-500 hover:text-red-700'
+									/>
+								</div>
+							</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+			<div className='absolute bottom-0 left-0 right-0 bg-card shadow-lg p-4'>
+				<div className='flex font-semibold text-lg gap-x-4 justify-start'>
+					<span>Итоговые часы:</span>
+					<span>{totalHours}</span>
+				</div>
+			</div>
+		</>
 	)
 }

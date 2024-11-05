@@ -36,6 +36,7 @@ const Input = forwardRef<HTMLInputElement, IInputProps>(
 					placeholder={placeholder}
 					accept={accept}
 					defaultValue={defaultValue}
+					autoFocus
 					ref={ref}
 					{...rest}
 				/>

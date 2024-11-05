@@ -1,12 +1,5 @@
 'use client'
-
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { AxiosError } from 'axios'
-import { Pencil, Plus, Trash, Upload, X } from 'lucide-react'
-import { type } from 'os'
 import { useState } from 'react'
-import { SubmitHandler, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
 
 import Loader from '@/components/Loader'
 import NotFoundData from '@/components/NotFoundData'
@@ -15,14 +8,13 @@ import { TeachersCreateModal } from '@/components/teachers/TeachersCreateModal'
 import { TeachersImportModal } from '@/components/teachers/TeachersImportModal'
 import { TeachersTable } from '@/components/teachers/TeachersTable'
 
-import { ITeacher, ITeacherCreate, ITeacherUpdate } from '@/types/teacher.types'
+import { ITeacher} from '@/types/teacher.types'
 
 import { useCreateTeachers } from '@/hooks/teachers/useCreateTeachers'
 import { useDeleteTeachers } from '@/hooks/teachers/useDeleteTeachers'
 import { useGetTeachers } from '@/hooks/teachers/useGetTeachers'
 import { useImportTeachers } from '@/hooks/teachers/useImportTeachers'
 
-import { teacherService } from '@/services/teacher.service'
 
 export function Teachers() {
 	const [searchTerm, setSearchTerm] = useState<string>('')
