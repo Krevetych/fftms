@@ -1,14 +1,7 @@
-import { type } from 'os'
-
 export enum EType {
 	NPO = 'NPO',
 	BUDGET = 'BUDGET',
 	NON_BUDGET = 'NON_BUDGET'
-}
-
-export enum EStatus {
-	ACTIVE = 'ACTIVE',
-	INACTIVE = 'INACTIVE'
 }
 
 export enum ECourse {
@@ -22,7 +15,6 @@ export enum ECourse {
 export interface ISubjectForm {
 	type: EType
 	course: ECourse
-	status: EStatus
 }
 
 export interface IGroup {
@@ -30,7 +22,14 @@ export interface IGroup {
 	name: string
 	type: EType
 	course: ECourse
-	status: EStatus
+}
+
+export interface IGroupD {
+	id: string
+	name: string
+	type: EType
+	course: ECourse
+	isDeleted: boolean
 }
 
 export interface IGroupCreate {
@@ -42,12 +41,10 @@ export interface IGroupCreate {
 export interface IFilteredGroup {
 	type?: EType
 	course?: ECourse
-	status?: EStatus
 }
 
 export interface IGroupUpdate {
 	name?: string
 	type?: EType
 	course?: ECourse
-	status?: EStatus
 }

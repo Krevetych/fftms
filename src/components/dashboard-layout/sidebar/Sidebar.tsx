@@ -24,6 +24,8 @@ export function Sidebar() {
 
 	const login = data?.login
 
+	const year = new Date().getFullYear()
+
 	return (
 		<aside className='bg-card rounded-2xl p-4 h-full flex flex-col justify-between'>
 			<div className='flex items-center justify-between'>
@@ -50,7 +52,8 @@ export function Sidebar() {
 				</div>
 			</div>
 			<footer className='text-xs opacity-40 font-normal text-center p-5'>
-				2024 &copy; Все права защищены
+				<p>{year} &copy; Все права защищены</p>
+				<p>v.{process.env.NEXT_PUBLIC_VERSION}</p>
 			</footer>
 			{modal && <Unload setModal={setModal} />}
 		</aside>

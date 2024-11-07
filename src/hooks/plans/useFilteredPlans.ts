@@ -27,7 +27,6 @@ export function useFilteredPlans() {
 		setFilters({
 			year: data.year || '',
 			rate: data.rate || '',
-			status: data.status || '',
 			objectId: data.objectId || '',
 			teacherId: data.teacherId || '',
 			groupId: data.groupId || ''

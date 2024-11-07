@@ -4,9 +4,9 @@ import {
 	UseFormRegister
 } from 'react-hook-form'
 
-import { COURSE, GROUP_STATUS, TYPE } from '@/constants/table.constants'
+import { COURSE, TYPE } from '@/constants/table.constants'
 
-import { ECourse, EStatus, EType, ISubjectForm } from '@/types/group.types'
+import { ECourse, EType, ISubjectForm } from '@/types/group.types'
 
 import SelectInput from '../SelectInput'
 import { Button } from '../dashboard-layout/Button'
@@ -45,14 +45,6 @@ export function GroupsFiltersForm({
 					label: value
 				}))}
 				{...filterRegister('course')}
-			/>
-			<SelectInput
-				label='Статус'
-				options={Object.entries(GROUP_STATUS).map(([status, value]) => ({
-					value: status as EStatus,
-					label: value
-				}))}
-				{...filterRegister('status')}
 			/>
 			<div className='flex gap-x-2'>
 				<Button

@@ -6,6 +6,7 @@ import {
 	IFilters,
 	IPlan,
 	IPlanCreate,
+	IPlanD,
 	IPlanUpdate,
 	IPlans,
 	IUnloadPlans
@@ -83,7 +84,7 @@ class PlanService {
 
 	async getPlaned(data: IPlans | undefined) {
 		const res = await axiosWithAuth.get<IFilteredPlan[]>(
-			`${this.URL}/find_by_plan?year=${data?.year}&rate=${data?.rate}&status=${data?.status}&objectId=${data?.objectId}&teacherId=${data?.teacherId}&groupId=${data?.groupId}`
+			`${this.URL}/find_by_plan?year=${data?.year}&rate=${data?.rate}&objectId=${data?.objectId}&teacherId=${data?.teacherId}&groupId=${data?.groupId}`
 		)
 
 		return res.data
@@ -91,6 +92,12 @@ class PlanService {
 
 	async getAll() {
 		const res = await axiosWithAuth.get<IPlan[]>(`${this.URL}/find_all`)
+
+		return res.data
+	}
+
+	async getAllD() {
+		const res = await axiosWithAuth.get<IPlanD[]>(`${this.URL}/find_all_d`)
 
 		return res.data
 	}

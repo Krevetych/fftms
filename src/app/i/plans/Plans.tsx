@@ -1,11 +1,9 @@
 'use client'
 
-import { Pencil, Plus, Trash, Upload, X } from 'lucide-react'
 import { useState } from 'react'
 
 import Loader from '@/components/Loader'
 import NotFoundData from '@/components/NotFoundData'
-import SelectInput from '@/components/SelectInput'
 import { PlanActions } from '@/components/plans/PlansActions'
 import { PlansCreateModal } from '@/components/plans/PlansCreateModal'
 import { PlansFilteredForm } from '@/components/plans/PlansFilteredForm'
@@ -68,6 +66,10 @@ export function Plans() {
 		plan.teacher.fio.toLowerCase().includes(searchTerm.toLowerCase())
 	)
 
+	const totalHours = filteredPlans
+		?.map(plan => plan.maxHours || 0)
+		.reduce((total, hours) => total + hours, 0)
+
 	return (
 		<>
 			<PlansFilteredForm
@@ -125,11 +127,16 @@ export function Plans() {
 						<Loader />
 					) : filteredPlans?.length !== 0 && filteredPlans ? (
 						<div className='overflow-x-auto'>
-							<div className='overflow-y-auto max-h-[70vh]'>
+							<div className='overflow-y-auto max-h-[68vh]'>
 								<PlansTable
 									handleModal={handleModal}
 									filteredPlans={filteredPlans}
 								/>
+							</div>
+							<div className='absolute top-2 right-2 bg-card shadow-lg p-2 border border-solid border-primary rounded-xl'>
+								<span className='font-semibold'>
+									Итоговые часы: {totalHours}
+								</span>
 							</div>
 						</div>
 					) : (

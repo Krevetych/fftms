@@ -11,6 +11,7 @@ class DASHBOARD {
 	SUBJECTS_H = `${this.root}/subjects/hourly`
 	SUBJECTS_T = `${this.root}/subjects/salaried`
 	TEACHERS = `${this.root}/teachers`
+	ARCHIVE = `${this.root}/archive`
 }
 
 export const PAGES = new DASHBOARD()

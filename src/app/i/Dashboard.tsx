@@ -8,7 +8,7 @@ import { Actions } from '@/components/dashboard/Actions'
 import { FilteredForm } from '@/components/dashboard/FilteredForm'
 import PlanTable from '@/components/dashboard/PlanTable'
 
-import { IFilteredPlan, IPlan } from '@/types/plan.types'
+import { ERate, IFilteredPlan, IPlan } from '@/types/plan.types'
 
 import { useFPlans } from '@/hooks/dashboard/useFPlans'
 import { useFiltered } from '@/hooks/dashboard/useFiltered'
@@ -37,6 +37,21 @@ export function Dashboard() {
 		plan.teacher.fio.toLowerCase().includes(searchTerm.toLowerCase())
 	)
 
+	const totalHours = filteredPlans?.reduce((total: number, plan) => {
+		const subjectHours =
+			watch('rate') === ERate.HOURLY
+				? plan?.Subject?.reduce(
+						(sum: number, subject) => sum + subject.hours,
+						0
+					) || 0
+				: plan?.SubjectTerm?.reduce(
+						(sum: number, subject) => sum + subject.hours,
+						0
+					) || 0
+
+		return total + subjectHours
+	}, 0)
+
 	return (
 		<>
 			<FilteredForm
@@ -62,7 +77,7 @@ export function Dashboard() {
 						<Loader />
 					) : filteredPlans?.length ? (
 						<div className='overflow-x-auto'>
-							<div className='overflow-y-auto max-h-[70vh]'>
+							<div className='overflow-y-auto max-h-[68vh]'>
 								<PlanTable
 									plans={filteredPlans as IFilteredPlan[]}
 									editingSubject={editingSubject}
@@ -73,6 +88,11 @@ export function Dashboard() {
 									getValues={getValues}
 									handleCreateSubject={handleCreateSubject}
 								/>
+							</div>
+							<div className='absolute top-2 right-2 bg-card shadow-lg p-2 border border-solid border-primary rounded-xl'>
+								<span className='font-semibold'>
+									Итоговые часы: {totalHours}
+								</span>
 							</div>
 						</div>
 					) : (

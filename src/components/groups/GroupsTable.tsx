@@ -2,7 +2,7 @@ import { Pencil, Trash } from 'lucide-react'
 
 import { COURSE, GROUP, TYPE } from '@/constants/table.constants'
 
-import { ECourse, EStatus, EType, IGroup } from '@/types/group.types'
+import { ECourse, EType, IGroup } from '@/types/group.types'
 
 interface IProps {
 	handleModal: (type: 'create' | 'edit' | 'delete' | null, group?: any) => void
@@ -37,13 +37,7 @@ export function GroupsTable({ handleModal, filteredGroups }: IProps) {
 						<td className='p-2 border-b border-gray-700'>
 							{TYPE[group.type as EType]}
 						</td>
-						<td className='p-2 border-b border-gray-700'>
-							{group.status === EStatus.ACTIVE ? (
-								<div className='h-5 w-10 bg-primary rounded-full'></div>
-							) : (
-								<div className='h-5 w-10 bg-red-500 rounded-full'></div>
-							)}
-						</td>
+
 						<td className='p-2 border-b border-gray-700'>
 							<div className='flex gap-x-2'>
 								<Pencil

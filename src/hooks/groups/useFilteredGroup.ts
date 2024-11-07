@@ -23,7 +23,6 @@ export function useFilteredGroup() {
 		setFilters({
 			type: data.type || '',
 			course: data.course || '',
-			status: data.status || ''
 		})
 	}
 

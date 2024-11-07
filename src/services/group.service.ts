@@ -2,6 +2,7 @@ import {
 	IFilteredGroup,
 	IGroup,
 	IGroupCreate,
+	IGroupD,
 	IGroupUpdate
 } from '@/types/group.types'
 
@@ -37,9 +38,15 @@ class GroupService {
 		return res.data
 	}
 
+	async getAllD() {
+		const res = await axiosWithAuth.get<IGroupD[]>(`${this.URL}/find_all_d`)
+
+		return res.data
+	}
+
 	async getFiltered(data: IFilteredGroup | undefined) {
 		const res = await axiosWithAuth.get<IGroup[]>(
-			`${this.URL}/find_by_filters?type=${data?.type}&course=${data?.course}&status=${data?.status}`
+			`${this.URL}/find_by_filters?type=${data?.type}&course=${data?.course}`
 		)
 
 		return res.data

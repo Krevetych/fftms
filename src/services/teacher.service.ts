@@ -1,4 +1,9 @@
-import { ITeacher, ITeacherCreate, ITeacherUpdate } from '@/types/teacher.types'
+import {
+	ITeacher,
+	ITeacherCreate,
+	ITeacherD,
+	ITeacherUpdate
+} from '@/types/teacher.types'
 
 import { axiosWithAuth } from '@/api/interceptors'
 
@@ -7,6 +12,12 @@ class TeacherService {
 
 	async getAll() {
 		const res = await axiosWithAuth.get<ITeacher[]>(`${this.URL}/find_all`)
+
+		return res.data
+	}
+
+	async getAllD() {
+		const res = await axiosWithAuth.get<ITeacherD[]>(`${this.URL}/find_all_d`)
 
 		return res.data
 	}

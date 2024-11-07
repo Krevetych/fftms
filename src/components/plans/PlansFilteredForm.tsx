@@ -4,9 +4,9 @@ import {
 	UseFormRegister
 } from 'react-hook-form'
 
-import { PLAN_STATUS, RATE } from '@/constants/table.constants'
+import { RATE } from '@/constants/table.constants'
 
-import { EStatus, IGroup } from '@/types/group.types'
+import { IGroup } from '@/types/group.types'
 import { IObject } from '@/types/object.types'
 import { ERate, IPlan, ISubjectForm } from '@/types/plan.types'
 import { ITeacher } from '@/types/teacher.types'
@@ -46,7 +46,7 @@ export function PlansFilteredForm({
 	return (
 		<form
 			onSubmit={filterHandleSubmit(onSubmit)}
-			className='flex bg-card justify-between gap-x-10 items-center w-fit mx-5 mt-5'
+			className='flex bg-card justify-between gap-x-10 items-center max-w-max overflow-x-auto mx-5 mt-5'
 		>
 			<SelectInput
 				label='Год'
@@ -74,14 +74,6 @@ export function PlansFilteredForm({
 					label: value
 				}))}
 				{...filterRegister('rate')}
-			/>
-			<SelectInput
-				label='Статус'
-				options={Object.entries(PLAN_STATUS).map(([status, value]) => ({
-					value: status as EStatus,
-					label: value
-				}))}
-				{...filterRegister('status')}
 			/>
 
 			<SelectInput

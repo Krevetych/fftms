@@ -1,4 +1,4 @@
-import { ECourse, EStatus, EType } from '@/types/group.types'
+import { ECourse, EType } from '@/types/group.types'
 import { ERate } from '@/types/plan.types'
 import { EMonth, EMonthHalf, ETerm } from '@/types/subject.types'
 
@@ -130,10 +130,6 @@ export const GROUP = [
 	{
 		id: 3,
 		title: 'Тип группы'
-	},
-	{
-		id: 4,
-		title: 'Статус'
 	}
 ]
 
@@ -149,16 +145,6 @@ export const COURSE: Record<ECourse, string> = {
 	[ECourse.THIRD]: '3',
 	[ECourse.FOURTH]: '4',
 	[ECourse.INACTIVE]: '-'
-}
-
-export const GROUP_STATUS: Record<EStatus, string> = {
-	[EStatus.ACTIVE]: 'Активная',
-	[EStatus.INACTIVE]: 'Выпуск'
-}
-
-export const PLAN_STATUS: Record<EStatus, string> = {
-	[EStatus.ACTIVE]: 'Активный',
-	[EStatus.INACTIVE]: 'Выпуск'
 }
 
 export const TERM: Record<ETerm, string> = {

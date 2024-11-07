@@ -2,7 +2,6 @@ import { Pencil, Trash } from 'lucide-react'
 
 import { RATE } from '@/constants/table.constants'
 
-import { EStatus } from '@/types/group.types'
 import { ERate, IPlan } from '@/types/plan.types'
 
 const MENU = [
@@ -36,10 +35,6 @@ const MENU = [
 		title: 'Группа'
 	},
 	{
-		id: 8,
-		title: 'Статус'
-	},
-	{
 		id: 9,
 		title: 'Действия'
 	}
@@ -51,10 +46,6 @@ interface IProps {
 }
 
 export function PlansTable({ handleModal, filteredPlans }: IProps) {
-	const totalHours: number = filteredPlans
-		.map(plan => plan.maxHours || 0)
-		.reduce((total, hours) => total + hours, 0)
-
 	return (
 		<>
 			<table className='w-full mt-4 border-collapse '>
@@ -89,13 +80,6 @@ export function PlansTable({ handleModal, filteredPlans }: IProps) {
 								{plan.group.name}
 							</td>
 							<td className='p-2 border-b border-gray-700'>
-								{plan.status === EStatus.ACTIVE ? (
-									<div className='h-5 w-10 rounded-full bg-primary'></div>
-								) : (
-									<div className='h-5 w-10 rounded-full bg-red-500'></div>
-								)}
-							</td>
-							<td className='p-2 border-b border-gray-700'>
 								<div className='flex gap-2'>
 									<Pencil
 										size={20}
@@ -113,12 +97,6 @@ export function PlansTable({ handleModal, filteredPlans }: IProps) {
 					))}
 				</tbody>
 			</table>
-			<div className='absolute bottom-0 left-0 right-0 bg-card shadow-lg p-4'>
-				<div className='flex font-semibold text-lg gap-x-4 justify-start'>
-					<span>Итоговые часы:</span>
-					<span>{totalHours}</span>
-				</div>
-			</div>
 		</>
 	)
 }

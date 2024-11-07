@@ -40,9 +40,8 @@ export default function RootLayout({
 					{children}
 					<Toaster
 						theme='dark'
-						position='bottom-right'
+						position='top-center'
 						duration={2500}
-						expand={true}
 						richColors
 					/>
 				</Providers>

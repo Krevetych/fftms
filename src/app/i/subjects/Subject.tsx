@@ -1,40 +1,16 @@
 'use client'
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Loader, Trash } from 'lucide-react'
+import { Loader } from 'lucide-react'
 import { useState } from 'react'
-import { SubmitHandler, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
 
 import NotFoundData from '@/components/NotFoundData'
-import SelectInput from '@/components/SelectInput'
 import { SubjectsActions } from '@/components/subjects/SubjectsActions'
 import { SubjectsFilteredForm } from '@/components/subjects/SubjectsFilteredForm'
 import { SubjectsFilteredModal } from '@/components/subjects/SubjectsFilteredModal'
 import { SubjectsTable } from '@/components/subjects/SubjectsTable'
 
-import {
-	MONTH,
-	MONTH_HALF,
-	SUBJECT,
-	SUBJECT_RATE,
-	TERM,
-	TYPE
-} from '@/constants/table.constants'
-
-import { EType } from '@/types/group.types'
 import { ERate } from '@/types/plan.types'
-import {
-	EMonth,
-	EMonthHalf,
-	ETerm,
-	IFilteredSubject,
-	IFilteredSubjectTerm,
-	IForm,
-	ISubject,
-	ISubjectTerm,
-	ITermForm
-} from '@/types/subject.types'
+import { IForm, ISubject, ISubjectTerm, ITermForm } from '@/types/subject.types'
 
 import { useGetGroups } from '@/hooks/groups/useGetGroups'
 import { useDeleteSubjects } from '@/hooks/subjects/useDeleteSubjects'
@@ -43,11 +19,6 @@ import { useGetSubjects } from '@/hooks/subjects/useGetSubjects'
 import { useGetSubjectsRate } from '@/hooks/subjects/useGetSubjectsRate'
 import { useGetSubjectsTerm } from '@/hooks/subjects/useGetSubjectsTerm'
 import { useGetTeachers } from '@/hooks/teachers/useGetTeachers'
-import { useProfile } from '@/hooks/useProfile'
-
-import { groupService } from '@/services/group.service'
-import { subjectService } from '@/services/subject.service'
-import { teacherService } from '@/services/teacher.service'
 
 export function Subject({ rate }: { rate: ERate }) {
 	const [modal, setModal] = useState(false)
@@ -123,7 +94,7 @@ export function Subject({ rate }: { rate: ERate }) {
 						<Loader />
 					) : filtererSubjects?.length !== 0 && filtererSubjects ? (
 						<div className='overflow-x-auto'>
-							<div className='overflow-y-auto max-h-[70vh]'>
+							<div className='overflow-y-auto max-h-[68vh]'>
 								<SubjectsTable
 									rate={rate}
 									filtererSubjects={filtererSubjects}

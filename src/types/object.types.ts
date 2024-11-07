@@ -3,6 +3,12 @@ export interface IObject {
 	name: string
 }
 
+export interface IObjectD {
+	id: string
+	name: string
+	isDeleted: boolean
+}
+
 export interface IObjectCreate {
 	name: string
 }

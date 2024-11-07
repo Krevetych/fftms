@@ -1,4 +1,4 @@
-import { IObject, IObjectCreate, IObjectUpdate } from '@/types/object.types'
+import { IObject, IObjectCreate, IObjectD, IObjectUpdate } from '@/types/object.types'
 
 import { axiosWithAuth } from '@/api/interceptors'
 
@@ -28,6 +28,12 @@ class ObjectService {
 
 	async getAll() {
 		const res = await axiosWithAuth.get<IObject[]>(`${this.URL}/find_all`)
+
+		return res.data
+	}
+
+	async getAllD() {
+		const res = await axiosWithAuth.get<IObjectD[]>(`${this.URL}/find_all_d`)
 
 		return res.data
 	}

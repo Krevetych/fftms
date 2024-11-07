@@ -1,4 +1,4 @@
-import { EStatus, IGroup } from './group.types'
+import { IGroup } from './group.types'
 import { IObject } from './object.types'
 import {
 	EMonth,
@@ -18,7 +18,6 @@ export interface ISubjectForm {
 	year: string
 	rate: ERate
 	objectId: string
-	status: EStatus
 	teacherId: string
 	groupId: string
 }
@@ -29,7 +28,18 @@ export interface IPlan {
 	rate: ERate
 	maxHours: number
 	worked: number
-	status: EStatus
+	Object: IObject
+	teacher: ITeacher
+	group: IGroup
+}
+
+export interface IPlanD {
+	id: string
+	isDeleted: boolean
+	year: string
+	rate: ERate
+	maxHours: number
+	worked: number
 	Object: IObject
 	teacher: ITeacher
 	group: IGroup
@@ -49,7 +59,6 @@ export interface IFilteredPlan {
 	rate: ERate
 	maxHours: number
 	worked: number
-	status: EStatus
 	Object: IObject
 	teacher: ITeacher
 	group: IGroup
@@ -69,7 +78,6 @@ export interface IPlans {
 	year?: string
 	rate?: ERate
 	objectId?: string
-	status?: EStatus
 	teacherId?: string
 	groupId?: string
 }
@@ -88,7 +96,6 @@ export interface IPlanUpdate {
 	year?: string
 	rate?: ERate
 	maxHours?: number
-	status?: EStatus
 	objectId?: string
 	teacherId?: string
 	groupId?: string

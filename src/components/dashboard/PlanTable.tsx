@@ -36,26 +36,11 @@ interface PlanTableProps {
 
 const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 	({ plans, handleBlur, rate, register, getValues }, ref) => {
-		const totalHours: number = plans.reduce((total: number, plan) => {
-			const subjectHours =
-				rate === ERate.HOURLY
-					? plan?.Subject?.reduce(
-							(sum: number, subject) => sum + subject.hours,
-							0
-						) || 0
-					: plan?.SubjectTerm?.reduce(
-							(sum: number, subject) => sum + subject.hours,
-							0
-						) || 0
-
-			return total + subjectHours
-		}, 0)
-
 		return (
 			<>
 				<table
-					ref={ref}
 					className='w-full mt-4 border-collapse'
+					ref={ref}
 				>
 					<thead>
 						<tr>
@@ -102,7 +87,7 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 					<tbody>
 						{plans.map(plan => (
 							<tr
-								key={plan.id}
+								key={`${plan.id}-${getValues('month')}-${getValues('term')}`}
 								className={
 									plan.maxHours - plan.worked === 0 ? 'text-gray-600' : ''
 								}
@@ -153,11 +138,9 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 												) : (
 													<input
 														type='text'
-														{...register(`subjects.${subject.id}.hours`, {
-															required: true
-														})}
+														{...register(`subjects.${subject.id}.hours`)}
 														className='p-3 w-full rounded-lg bg-card font-semibold placeholder:font-normal outline-none border-none'
-														defaultValue={subject.hours}
+														value={subject.hours || 0}
 														onBlur={e =>
 															handleBlur(subject.id, plan.id, e.target.value)
 														}
@@ -178,11 +161,9 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 												) : (
 													<input
 														type='text'
-														{...register(`subjects.${subject.id}.hours`, {
-															required: true
-														})}
+														{...register(`subjects.${subject.id}.hours`)}
 														className='p-3 w-full rounded-lg bg-card font-semibold placeholder:font-normal outline-none border-none'
-														defaultValue={subject.hours}
+														value={subject.hours || 0}
 														onBlur={e =>
 															handleBlur(subject.id, plan.id, e.target.value)
 														}
@@ -199,9 +180,7 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 											) : (
 												<input
 													type='text'
-													{...register(`subjects.new.hours`, {
-														required: true
-													})}
+													{...register(`subjects.${plan.id}.hours`)}
 													placeholder='Введите часы'
 													className='p-3 w-full rounded-lg bg-card font-semibold placeholder:font-normal outline-none border-none'
 													onBlur={e =>
@@ -216,12 +195,6 @@ const PlanTable = forwardRef<HTMLTableElement, PlanTableProps>(
 						))}
 					</tbody>
 				</table>
-				<div className='absolute bottom-0 left-0 right-0 bg-card shadow-lg p-4'>
-					<div className='flex font-semibold text-lg gap-x-4 justify-start'>
-						<span>Итоговые часы:</span>
-						<span>{totalHours}</span>
-					</div>
-				</div>
 			</>
 		)
 	}

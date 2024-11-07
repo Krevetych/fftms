@@ -1,4 +1,5 @@
 import {
+	Archive,
 	BookUser,
 	Captions,
 	Hourglass,
@@ -53,6 +54,12 @@ export const MENU: IMenuItem[] = [
 		icon: School,
 		name: 'Преподаватели',
 		link: PAGES.TEACHERS,
+		access: ['admin']
+	},
+	{
+		icon: Archive,
+		name: 'Архив',
+		link: PAGES.ARCHIVE,
 		access: ['admin']
 	}
 ]

@@ -37,7 +37,7 @@ export function useFiltered() {
 
 	const { register, handleSubmit, getValues, watch, reset } =
 		useForm<ISubjectForm>({
-			mode: 'onChange'
+			mode: 'onBlur'
 		})
 
 	const mutation = useMutation({
@@ -56,7 +56,7 @@ export function useFiltered() {
 		onSuccess: () => {
 			toast.success(`Запись ${editingSubject ? 'обновлена' : 'создана'}`)
 			queryClient.invalidateQueries({
-				queryKey: ['f-plans', filters]
+				queryKey: ['f-plans']
 			})
 			queryClient.invalidateQueries({
 				queryKey: ['subjects']

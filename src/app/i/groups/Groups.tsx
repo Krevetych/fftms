@@ -105,7 +105,7 @@ export function Groups() {
 						<Loader />
 					) : filteredGroups?.length !== 0 && filteredGroups ? (
 						<div className='overflow-x-auto'>
-							<div className='overflow-y-auto max-h-[70vh]'>
+							<div className='overflow-y-auto max-h-[68vh]'>
 								<GroupsTable
 									handleModal={handleModal}
 									filteredGroups={filteredGroups}
