@@ -1,9 +1,12 @@
 'use client'
 
 import { Download } from 'lucide-react'
+import Link from 'next/link'
 import { useState } from 'react'
 
 import Loader from '@/components/Loader'
+
+import { PAGES } from '@/config/url.config'
 
 import { useProfile } from '@/hooks/useProfile'
 
@@ -52,6 +55,12 @@ export function Sidebar() {
 				</div>
 			</div>
 			<footer className='text-xs opacity-40 font-normal text-center p-5'>
+				<Link
+					href={PAGES.DOCS}
+					className='transition-colors cursor-pointer hover:text-primary hover:underline'
+				>
+					Документация к приложению
+				</Link>
 				<p>{year} &copy; Все права защищены</p>
 				<p>v.{process.env.NEXT_PUBLIC_VERSION}</p>
 			</footer>
