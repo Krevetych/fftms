@@ -1,8 +1,8 @@
 'use client'
 
-import { Download } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Download } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import Loader from '@/components/Loader'
 
@@ -17,9 +17,30 @@ import { MenuItem } from './MenuItem'
 import { Profile } from './Profile'
 import { MENU } from './menu.data'
 
-export function Sidebar() {
+interface ISidebar {
+	collapsed: boolean
+	toggleCollapsed: () => void
+	setCollapsed: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export function Sidebar({
+	collapsed,
+	toggleCollapsed,
+	setCollapsed
+}: ISidebar) {
 	const { data, isLoading } = useProfile()
 	const [modal, setModal] = useState(false)
+
+	useEffect(() => {
+		const savedState = localStorage.getItem('sidebarCollapsed')
+		if (savedState) {
+			setCollapsed(JSON.parse(savedState))
+		}
+	}, [])
+
+	useEffect(() => {
+		localStorage.setItem('sidebarCollapsed', JSON.stringify(collapsed))
+	}, [collapsed])
 
 	const handleModal = () => {
 		setModal(!modal)
@@ -30,40 +51,70 @@ export function Sidebar() {
 	const year = new Date().getFullYear()
 
 	return (
-		<aside className='bg-card rounded-2xl p-4 h-full flex flex-col justify-between'>
-			<div className='flex items-center justify-between'>
-				{isLoading ? <Loader /> : <Profile login={login} />}
-				<LogoutButton />
-			</div>
+		<aside className='bg-card relative rounded-2xl p-4 h-full flex flex-col justify-between'>
+			{collapsed ? (
+				<div className='text-center'>
+					<LogoutButton />
+				</div>
+			) : isLoading ? (
+				<Loader />
+			) : (
+				<div className='flex items-center justify-between'>
+					<Profile login={login} />
+					<LogoutButton />
+				</div>
+			)}
 			<div>
 				{MENU.filter(item => data?.isAdmin || item.access.includes('user')).map(
 					item => (
 						<MenuItem
+							collapsed={collapsed}
 							item={item}
 							key={item.link}
 						/>
 					)
 				)}
-				<div
-					className='flex gap-2 items-center py-2 mt-2 px-5 transition-colors hover:bg-primary rounded-lg'
-					onClick={handleModal}
-				>
-					<Download />
-					<span className='truncate'>
-						<span>Выгрузить данные</span>
-					</span>
-				</div>
+				{collapsed ? (
+					<p className='flex items-center gap-2 my-3 transition-colors hover:text-primary'>
+						<Download />
+					</p>
+				) : (
+					<div
+						className='flex gap-2 items-center py-2 mt-1 px-5 transition-colors hover:text-primary'
+						onClick={handleModal}
+					>
+						<Download size={24} />
+						<span className='truncate'>Выгрузить данные</span>
+					</div>
+				)}
 			</div>
-			<footer className='text-xs opacity-40 font-normal text-center p-5'>
-				<Link
-					href={PAGES.DOCS}
-					className='transition-colors cursor-pointer hover:text-primary hover:underline'
+			{collapsed ? (
+				<div
+					onClick={toggleCollapsed}
+					className='text-center transition-colors hover:text-primary'
 				>
-					Документация к приложению
-				</Link>
-				<p>{year} &copy; Все права защищены</p>
-				<p>v.{process.env.NEXT_PUBLIC_VERSION}</p>
-			</footer>
+					<ChevronRight />
+				</div>
+			) : (
+				<>
+					<div
+						onClick={toggleCollapsed}
+						className='absolute bottom-5 right-5 z-10 transition-colors cursor-pointer hover:text-primary'
+					>
+						<ChevronLeft />
+					</div>
+					<footer className='text-xs opacity-40 font-normal text-center p-5'>
+						<Link
+							href={PAGES.DOCS}
+							className='transition-colors cursor-pointer hover:text-primary hover:underline'
+						>
+							Документация к приложению
+						</Link>
+						<p>{year} &copy; Все права защищены</p>
+						<p>v.{process.env.NEXT_PUBLIC_VERSION}</p>
+					</footer>
+				</>
+			)}
 			{modal && <Unload setModal={setModal} />}
 		</aside>
 	)
