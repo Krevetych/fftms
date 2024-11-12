@@ -10,6 +10,8 @@ interface IInputProps {
 	togglePassword?: () => void
 	extra?: string
 	passwordVisible?: boolean
+	value?: string
+	readOnly?: boolean
 }
 
 const Input = forwardRef<HTMLInputElement, IInputProps>(
@@ -23,6 +25,8 @@ const Input = forwardRef<HTMLInputElement, IInputProps>(
 			togglePassword,
 			passwordVisible,
 			extra,
+			value,
+			readOnly,
 			...rest
 		},
 		ref
@@ -31,11 +35,13 @@ const Input = forwardRef<HTMLInputElement, IInputProps>(
 			<div className={extra}>
 				<input
 					type={type}
-					className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none'
+					className={`p-3 rounded-lg  mb-2 bg-card font-semibold ${readOnly ? 'text-text/50 placeholder:text-text/50' : 'text-text placeholder:text-text'} placeholder:font-normal w-full outline-none border-none`}
 					onChange={onChange}
 					placeholder={placeholder}
 					accept={accept}
 					defaultValue={defaultValue}
+					value={value}
+					readOnly={readOnly}
 					autoFocus
 					ref={ref}
 					{...rest}

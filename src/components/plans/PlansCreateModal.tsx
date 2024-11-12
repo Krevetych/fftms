@@ -103,30 +103,78 @@ export function PlansCreateModal({
 									type='text'
 									placeholder='Макс. кол-во часов'
 								/>
-								<SelectInput
-									label='Предмет'
-									{...createRegister('objectId', { required: true })}
-									options={objectsData?.map(object => ({
-										value: object.id,
-										label: object.name
-									}))}
-								/>
-								<SelectInput
-									label='Преподаватель'
-									{...createRegister('teacherId', { required: true })}
-									options={teachersData?.map(teacher => ({
-										value: teacher.id,
-										label: teacher.fio
-									}))}
-								/>
-								<SelectInput
-									label='Группа'
-									{...createRegister('groupId', { required: true })}
-									options={groupData?.map(group => ({
-										value: group.id,
-										label: group.name
-									}))}
-								/>
+
+								{actionType === 'edit' ? (
+									<>
+										<Input
+											type='text'
+											value={selectedPlan?.Object.name}
+											placeholder='Предмет'
+											readOnly
+										/>
+										<Input
+											type='hidden'
+											{...createRegister('objectId')}
+											value={selectedPlan?.Object.id}
+											placeholder='Предмет'
+										/>
+
+										<Input
+											type='text'
+											value={selectedPlan?.teacher.fio}
+											placeholder='Преподаватель'
+											readOnly
+										/>
+										<Input
+											type='hidden'
+											{...createRegister('teacherId')}
+											placeholder='Преподаватель'
+											value={selectedPlan?.teacher.id}
+										/>
+
+										<Input
+											type='text'
+											value={selectedPlan?.group.name}
+											placeholder='Группа'
+											readOnly
+										/>
+										<Input
+											type='hidden'
+											{...createRegister('groupId')}
+											value={selectedPlan?.group.id}
+											placeholder='Группа'
+										/>
+									</>
+								) : (
+									<>
+										<SelectInput
+											label='Предмет'
+											{...createRegister('objectId', { required: true })}
+											options={objectsData?.map(object => ({
+												value: object.id,
+												label: object.name
+											}))}
+										/>
+
+										<SelectInput
+											label='Преподаватель'
+											{...createRegister('teacherId', { required: true })}
+											options={teachersData?.map(teacher => ({
+												value: teacher.id,
+												label: teacher.fio
+											}))}
+										/>
+
+										<SelectInput
+											label='Группа'
+											{...createRegister('groupId', { required: true })}
+											options={groupData?.map(group => ({
+												value: group.id,
+												label: group.name
+											}))}
+										/>
+									</>
+								)}
 							</div>
 							<Button
 								type='submit'

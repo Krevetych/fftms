@@ -75,12 +75,15 @@ export function Sidebar({
 					)
 				)}
 				{collapsed ? (
-					<p className='flex items-center gap-2 my-3 transition-colors hover:text-primary'>
+					<p
+						className='flex items-center gap-2 my-3 transition-colors cursor-pointer hover:text-primary'
+						onClick={handleModal}
+					>
 						<Download />
 					</p>
 				) : (
 					<div
-						className='flex gap-2 items-center py-2 mt-1 px-5 transition-colors hover:text-primary'
+						className='flex gap-2 cursor-pointer items-center py-2 mt-1 px-5 transition-colors hover:text-primary'
 						onClick={handleModal}
 					>
 						<Download size={24} />
@@ -111,7 +114,7 @@ export function Sidebar({
 							Документация к приложению
 						</Link>
 						<p>{year} &copy; Все права защищены</p>
-						<p>v.{process.env.NEXT_PUBLIC_VERSION}</p>
+						<p>v.1.0</p>
 					</footer>
 				</>
 			)}

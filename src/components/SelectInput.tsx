@@ -9,19 +9,12 @@ interface SelectInputProps {
 
 const SelectInput = forwardRef<HTMLSelectElement, SelectInputProps>(
 	({ label, options, loading = false, ...rest }, ref) => {
-		// Функция для обрезки текста
-		const truncateText = (text: string, maxLength: number) => {
-			return text.length > maxLength
-				? text.substring(0, maxLength) + '...'
-				: text
-		}
-
 		return (
 			<div className='mb-2'>
 				<select
 					ref={ref}
 					{...rest}
-					className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-none min-w-0'
+					className='p-3 rounded-lg text-text bg-card font-semibold placeholder:text-text placeholder:font-normal w-full outline-none border-transparent border border-solid cursor-pointer appearance-none focus:border-primary focus:border focus:border-solid'
 					disabled={loading || options.length === 0}
 				>
 					<option value=''>{loading ? 'Загрузка...' : label}</option>
@@ -30,7 +23,7 @@ const SelectInput = forwardRef<HTMLSelectElement, SelectInputProps>(
 							key={option.value}
 							value={option.value}
 						>
-							{truncateText(option.label, 15)}
+							{option.label}
 						</option>
 					))}
 				</select>
