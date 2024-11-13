@@ -11,7 +11,7 @@ export function useDeleteTeachers() {
 		mutationKey: ['teachers-delete'],
 		mutationFn: (id: string) => teacherService.delete(id),
 		onSuccess: () => {
-			toast.success('Запись удалена')
+			toast.info('Запись перенесена в архив')
 			queryClient.invalidateQueries({ queryKey: ['teachers'] })
 		},
 		onError: (error: AxiosError) => {

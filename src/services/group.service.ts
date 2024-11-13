@@ -59,6 +59,20 @@ class GroupService {
 
 		return res.data
 	}
+
+	async forceDelete(id: string) {
+		const res = await axiosWithAuth.delete<boolean>(
+			`${this.URL}/force_delete?id=${id}`
+		)
+
+		return res.data
+	}
+
+	async restore(id: string) {
+		const res = await axiosWithAuth.put<boolean>(`${this.URL}/restore?id=${id}`)
+
+		return res.data
+	}
 }
 
 export const groupService = new GroupService()

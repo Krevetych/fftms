@@ -11,7 +11,7 @@ export function useDeletePlans() {
 		mutationKey: ['plans-delete'],
 		mutationFn: (id: string) => planService.delete(id),
 		onSuccess: () => {
-			toast.success('Запись удалена')
+			toast.info('Запись перенесена в архив')
 			queryClient.invalidateQueries({ queryKey: ['plans'] })
 		},
 		onError: (error: AxiosError) => {

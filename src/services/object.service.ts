@@ -1,4 +1,9 @@
-import { IObject, IObjectCreate, IObjectD, IObjectUpdate } from '@/types/object.types'
+import {
+	IObject,
+	IObjectCreate,
+	IObjectD,
+	IObjectUpdate
+} from '@/types/object.types'
 
 import { axiosWithAuth } from '@/api/interceptors'
 
@@ -42,6 +47,20 @@ class ObjectService {
 		const res = await axiosWithAuth.delete<boolean>(
 			`${this.URL}/delete?id=${id}`
 		)
+
+		return res.data
+	}
+
+	async forceDelete(id: string) {
+		const res = await axiosWithAuth.delete<boolean>(
+			`${this.URL}/force_delete?id=${id}`
+		)
+
+		return res.data
+	}
+
+	async restore(id: string) {
+		const res = await axiosWithAuth.put<boolean>(`${this.URL}/restore?id=${id}`)
 
 		return res.data
 	}

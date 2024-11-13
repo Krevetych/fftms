@@ -11,7 +11,7 @@ export function useDeleteGroup() {
 		mutationKey: ['groups-delete'],
 		mutationFn: (id: string) => groupService.delete(id),
 		onSuccess: () => {
-			toast.success('Запись удалена')
+			toast.info('Запись перенесена в архив')
 			queryClient.invalidateQueries({ queryKey: ['groups'] })
 		},
 		onError: (error: AxiosError) => {

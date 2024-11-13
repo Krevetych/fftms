@@ -11,7 +11,7 @@ export function useDeleteObject() {
 		mutationKey: ['objects-delete'],
 		mutationFn: (id: string) => objectService.delete(id),
 		onSuccess: () => {
-			toast.success('Запись удалена')
+			toast.info('Запись перенесена в архив')
 			queryClient.invalidateQueries({ queryKey: ['objects'] })
 		},
 		onError: (error: AxiosError) => {
